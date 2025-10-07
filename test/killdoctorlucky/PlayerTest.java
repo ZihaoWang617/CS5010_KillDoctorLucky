@@ -21,7 +21,7 @@ public class PlayerTest {
     private Board board;
     
     @Before
-    void setUp() {
+    public void setUp() {
         kitchen = new Room("Kitchen", true);
         diningRoom = new Room("Dining Room", true);
         library = new Room("Library", true);
@@ -40,10 +40,12 @@ public class PlayerTest {
         board.addRoom(kitchen);
         board.addRoom(diningRoom);
         board.addRoom(library);
+        board.connectRooms(kitchen, diningRoom);
+        board.connectRooms(diningRoom, library);
     }
     
     @Test
-    void testValidPlayerCreation() {
+    public void testValidPlayerCreation() {
         Player charlie = new Player("Charlie", library);
         assertEquals("Charlie", charlie.getName());
         assertEquals(library, charlie.getCurrentRoom());
@@ -51,14 +53,14 @@ public class PlayerTest {
     }
     
     @Test
-    void testInvalidPlayerCreation() {
+    public void testInvalidPlayerCreation() {
         assertThrows(IllegalArgumentException.class, () -> new Player(null, kitchen));
         assertThrows(IllegalArgumentException.class, () -> new Player("", kitchen));
         assertThrows(IllegalArgumentException.class, () -> new Player("Bob", null));
     }
     
     @Test
-    void testValidMovement() {
+    public void testValidMovement() {
         assertEquals(kitchen, alice.getCurrentRoom());
         assertTrue(alice.moveToRoom(diningRoom));
         assertEquals(diningRoom, alice.getCurrentRoom());
@@ -67,19 +69,19 @@ public class PlayerTest {
     }
     
     @Test
-    void testInvalidMovement() {
+    public void testInvalidMovement() {
         // Try to move to unconnected room
         assertFalse(alice.moveToRoom(library));
         assertEquals(kitchen, alice.getCurrentRoom());
     }
     
     @Test
-    void testMoveToNullRoom() {
+    public void testMoveToNullRoom() {
         assertThrows(IllegalArgumentException.class, () -> alice.moveToRoom(null));
     }
     
     @Test
-    void testAddCard() {
+    public void testAddCard() {
         List<Playable> hand = alice.getHand();
         int initialSize = hand.size();
         
@@ -89,12 +91,12 @@ public class PlayerTest {
     }
     
     @Test
-    void testAddNullCard() {
+    public void testAddNullCard() {
         assertThrows(IllegalArgumentException.class, () -> alice.addCard(null));
     }
     
     @Test
-    void testRemoveCard() {
+    public void testRemoveCard() {
         alice.addCard(knife);
         assertTrue(alice.getHand().contains(knife));
         
@@ -103,17 +105,17 @@ public class PlayerTest {
     }
     
     @Test
-    void testRemoveNonExistentCard() {
+    public void testRemoveNonExistentCard() {
         assertFalse(alice.removeCard(knife));
     }
     
     @Test
-    void testRemoveNullCard() {
+    public void testRemoveNullCard() {
         assertThrows(IllegalArgumentException.class, () -> alice.removeCard(null));
     }
     
     @Test
-    void testPlayCard() {
+    public void testPlayCard() {
         alice.addCard(knife);
         assertTrue(alice.getHand().contains(knife));
         
@@ -122,17 +124,17 @@ public class PlayerTest {
     }
     
     @Test
-    void testPlayCardNotInHand() {
+    public void testPlayCardNotInHand() {
         assertThrows(IllegalArgumentException.class, () -> alice.playCard(knife));
     }
     
     @Test
-    void testPlayNullCard() {
+    public void testPlayNullCard() {
         assertThrows(IllegalArgumentException.class, () -> alice.playCard(null));
     }
     
     @Test
-    void testHasWeapons() {
+    public void testHasWeapons() {
         assertFalse(alice.hasWeapons());
         
         alice.addCard(quickStep);
@@ -143,30 +145,30 @@ public class PlayerTest {
     }
     
     @Test
-    void testCanDrawCard() {
+    public void testCanDrawCard() {
         // Based on game rules, players can always draw cards
         assertTrue(alice.canDrawCard());
     }
     
     @Test
-    void testCanBeSeenBySameRoom() {
+    public void testCanBeSeenBySameRoom() {
         // Move bob to same room as alice
         bob.moveToRoom(kitchen);
         assertTrue(alice.canBeSeenBy(bob, board));
     }
     
     @Test
-    void testCanBeSeenByNullOccupant() {
+    public void testCanBeSeenByNullOccupant() {
         assertThrows(IllegalArgumentException.class, () -> alice.canBeSeenBy(null, board));
     }
     
     @Test
-    void testCanBeSeenByNullBoard() {
+    public void testCanBeSeenByNullBoard() {
         assertThrows(IllegalArgumentException.class, () -> alice.canBeSeenBy(bob, null));
     }
     
     @Test
-    void testGetHandDefensiveCopy() {
+    public void testGetHandDefensiveCopy() {
         alice.addCard(knife);
         List<Playable> hand1 = alice.getHand();
         List<Playable> hand2 = alice.getHand();
@@ -181,14 +183,14 @@ public class PlayerTest {
     }
     
     @Test
-    void testToString() {
+    public void testToString() {
         String result = alice.toString();
         assertTrue(result.contains("Alice"));
         assertTrue(result.contains("Kitchen"));
     }
     
     @Test
-    void testEquals() {
+    public void testEquals() {
         Player anotherAlice = new Player("Alice", diningRoom);
         assertEquals(alice, anotherAlice);
         assertNotEquals(alice, bob);

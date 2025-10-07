@@ -1,0 +1,44 @@
+30 25 My Awesome Mansion
+50 Doctor Lucky
+20
+0 0 4 4 Grand Entrance
+5 0 9 4 Library
+10 0 14 4 Study Room
+15 0 19 4 Billiard Room
+20 0 24 4 Conservatory
+0 5 4 9 Dining Room
+5 5 9 9 Kitchen
+10 5 14 9 Pantry
+15 5 19 9 Wine Cellar
+20 5 24 9 Servant Quarters
+0 10 4 14 Drawing Room
+5 10 9 14 Music Room
+10 10 14 14 Grand Ballroom
+15 10 19 14 Art Gallery
+20 10 24 14 Trophy Room
+0 15 4 19 Master Bedroom
+5 15 9 19 Guest Bedroom
+10 15 14 19 Luxury Bathroom
+15 15 19 19 Dressing Room
+20 15 24 19 Storage Attic
+20
+0 8 Revolver
+1 7 Sharp Knife
+2 6 Silk Rope
+3 5 Golden Candlestick
+4 4 Lead Pipe
+5 3 Monkey Wrench
+6 9 Deadly Poison
+7 6 Silver Dagger
+8 5 Battle Axe
+9 4 War Hammer
+10 7 Ancient Sword
+11 3 Iron Spear
+12 8 Heavy Crossbow
+13 5 Wooden Club
+14 6 Steel Mace
+15 4 Heavy Chain
+16 7 Rusty Sickle
+17 5 Farmer Scythe
+18 6 Neptune Trident
+19 8 Medieval Halberd

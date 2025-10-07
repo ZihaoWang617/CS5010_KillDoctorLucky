@@ -16,7 +16,7 @@ public class RoomTest {
     private Player bob;
     
   @Before
-  void setUp() {
+  public void setUp() {
     kitchen = new Room("Kitchen", true);
     diningRoom = new Room("Dining Room", true);
     alice = new Player("Alice", kitchen);
@@ -24,21 +24,21 @@ public class RoomTest {
   }
     
   @Test
-  void testValidRoomCreation() {
+  public void testValidRoomCreation() {
     Room library = new Room("Library", true);
     assertEquals("Library", library.getName());
     assertTrue(library.isNamedRoom());
   }
     
   @Test
-  void testInvalidRoomCreation() {
+  public void testInvalidRoomCreation() {
     assertThrows(IllegalArgumentException.class, () -> new Room(null, true));
     assertThrows(IllegalArgumentException.class, () -> new Room("", true));
     assertThrows(IllegalArgumentException.class, () -> new Room("   ", true));
     }
     
   @Test
-  void testAddOccupant() {
+  public void testAddOccupant() {
     List<Occupant> occupants = kitchen.getOccupants();
     assertTrue(occupants.contains(alice));
     assertEquals(1, occupants.size());   
@@ -50,12 +50,12 @@ public class RoomTest {
     }
     
   @Test
-  void testAddNullOccupant() {
+  public void testAddNullOccupant() {
     assertThrows(IllegalArgumentException.class, () -> kitchen.addOccupant(null));
     }
     
   @Test
-  void testRemoveOccupant() {
+  public void testRemoveOccupant() {
     assertTrue(kitchen.getOccupants().contains(alice));
     kitchen.removeOccupant(alice);
     assertFalse(kitchen.getOccupants().contains(alice));
@@ -63,23 +63,23 @@ public class RoomTest {
     }
     
   @Test
-  void testRemoveNullOccupant() {
+  public void testRemoveNullOccupant() {
     assertThrows(IllegalArgumentException.class, () -> kitchen.removeOccupant(null));
     }
     
   @Test
-  void testIsOccupiedBy() {
+  public void testIsOccupiedBy() {
     assertTrue(kitchen.isOccupiedBy(alice));
     assertFalse(kitchen.isOccupiedBy(bob));
     }
     
   @Test
-  void testIsOccupiedByNull() {
+  public void testIsOccupiedByNull() {
     assertThrows(IllegalArgumentException.class, () -> kitchen.isOccupiedBy(null));
     }
     
   @Test
-  void testGetPlayerCount() {
+  public void testGetPlayerCount() {
     assertEquals(1, kitchen.getPlayerCount());
     assertEquals(1, diningRoom.getPlayerCount());
         
@@ -89,7 +89,7 @@ public class RoomTest {
     }
     
   @Test
-  void testRoomConnections() {
+  public void testRoomConnections() {
     kitchen.addConnection(diningRoom);
     List<Room> connections = kitchen.getConnections();
     assertTrue(connections.contains(diningRoom));
@@ -97,24 +97,24 @@ public class RoomTest {
     }
     
   @Test
-  void testAddNullConnection() {
+  public void testAddNullConnection() {
     assertThrows(IllegalArgumentException.class, () -> kitchen.addConnection(null));
     }
     
   @Test
-  void testAddSelfConnection() {
+  public void testAddSelfConnection() {
     assertThrows(IllegalArgumentException.class, () -> kitchen.addConnection(kitchen));
     }
     
   @Test
-  void testToString() {
+  public void testToString() {
     String result = kitchen.toString();
     assertTrue(result.contains("Kitchen"));
     assertTrue(result.contains("occupants=1"));
     }
     
   @Test
-  void testEquals() {
+  public void testEquals() {
     Room anotherKitchen = new Room("Kitchen", true);
     assertEquals(kitchen, anotherKitchen);
     assertNotEquals(kitchen, diningRoom);

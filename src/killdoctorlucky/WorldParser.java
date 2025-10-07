@@ -190,12 +190,12 @@ public class WorldParser {
     private static boolean areNeighbors(RoomData room1, RoomData room2) {
         // Check if rooms share a vertical edge
         boolean shareVerticalEdge = 
-            (room1.col2 == room2.col1 || room1.col1 == room2.col2) &&
+            (room1.col2 + 1 == room2.col1 || room1.col1 == room2.col2 + 1) &&
             !(room1.row2 < room2.row1 || room2.row2 < room1.row1);
         
         // Check if rooms share a horizontal edge
         boolean shareHorizontalEdge = 
-            (room1.row2 == room2.row1 || room1.row1 == room2.row2) &&
+            (room1.row2 + 1 == room2.row1 || room1.row1 == room2.row2 + 1) &&
             !(room1.col2 < room2.col1 || room2.col2 < room1.col1);
         
         return shareVerticalEdge || shareHorizontalEdge;
