@@ -1,5 +1,6 @@
 package killdoctorlucky;
 
+import java.util.ArrayList; 
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public class DoctorLucky implements Movable, Occupant {
     private Room currentRoom;
-    private final List<Room> movementSequence;
+    private List<Room> movementSequence;
     private int sequenceIndex;
     
     /**
@@ -25,7 +26,8 @@ public class DoctorLucky implements Movable, Occupant {
         }
         
         this.currentRoom = startingRoom;
-        this.movementSequence = null; // Will be set by Board during initialization
+        this.movementSequence = new ArrayList<>();
+        this.movementSequence.add(startingRoom);
         this.sequenceIndex = 0;
         
         // Add Doctor Lucky to the starting room
@@ -60,6 +62,31 @@ public class DoctorLucky implements Movable, Occupant {
         currentRoom.removeOccupant(this);
         nextRoom.addOccupant(this);
         currentRoom = nextRoom;
+    }
+    
+    /**
+     * Sets the movement sequence for Doctor Lucky.
+     * Doctor Lucky will move through these rooms in order.
+     * 
+     * @param sequence the ordered list of rooms to visit
+     * @throws IllegalArgumentException if sequence is null or empty
+     */
+    public void setMovementSequence(List<Room> sequence) {
+        if (sequence == null || sequence.isEmpty()) {
+            throw new IllegalArgumentException("Movement sequence cannot be null or empty");
+        }
+        this.movementSequence = new ArrayList<>(sequence);
+        
+        // Find current room's position in the sequence
+        for (int i = 0; i < this.movementSequence.size(); i++) {
+            if (this.movementSequence.get(i).equals(currentRoom)) {
+                this.sequenceIndex = i;
+                return;
+            }
+        }
+        
+        // If current room not found, start from beginning
+        this.sequenceIndex = 0;
     }
     
     /**

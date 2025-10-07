@@ -12,6 +12,7 @@ public class Room {
     private final boolean isNamedRoom;
     private final List<Room> connectedRooms;
     private final List<Occupant> occupants;
+    private final List<Item> items;
     
     /**
      * Creates a new room with the specified name and type.
@@ -28,6 +29,7 @@ public class Room {
         this.isNamedRoom = isNamed;
         this.connectedRooms = new ArrayList<>();
         this.occupants = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
     
     /**
@@ -126,6 +128,51 @@ public class Room {
             }
         }
         return playerCount;
+    }
+    
+    /**
+     * Gets a copy of the list of items currently in this room.
+     * Modifying the returned list will not affect the room's item list.
+     * 
+     * @return a new list containing all items in this room
+     */
+    public List<Item> getItems() {
+        return new ArrayList<>(items);
+    }
+    
+    /**
+     * Adds an item to this room.
+     * The item will be placed in this room and its location will be updated.
+     * 
+     * @param item the item to add to this room
+     * @throws IllegalArgumentException if item is null
+     */
+    public void addItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        }
+        if (!items.contains(item)) {
+            items.add(item);
+            item.setRoom(this);
+        }
+    }
+    
+    /**
+     * Removes an item from this room.
+     * 
+     * @param item the item to remove
+     * @return true if the item was removed, false if it wasn't in this room
+     * @throws IllegalArgumentException if item is null
+     */
+    public boolean removeItem(Item item) {
+        if (item == null) {
+            throw new IllegalArgumentException("Item cannot be null");
+        }
+        boolean removed = items.remove(item);
+        if (removed) {
+            item.setRoom(null);
+        }
+        return removed;
     }
     
     /**
