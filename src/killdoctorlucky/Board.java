@@ -1,196 +1,199 @@
 package killdoctorlucky;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Represents the game board containing all rooms and their spatial relationships.
- * The board manages room connections, sight lines, and visibility calculations
- * for the Kill Doctor Lucky game world.
+ * Represents the game board containing all rooms and their spatial
+ * relationships. The board manages room connections, sight lines, and
+ * visibility calculations for the Kill Doctor Lucky game world.
  */
 public class Board {
-    private final Map<String, Room> rooms;
-    private final Map<String, List<String>> sightLines;
-    
-    /**
-     * Creates a new game board with empty room and sight line collections.
-     * Rooms and connections must be added separately after construction.
-     */
-    public Board() {
-        this.rooms = new HashMap<>();
-        this.sightLines = new HashMap<>();
+  private final Map<String, Room> rooms;
+  private final Map<String, List<String>> sightLines;
+
+  /**
+   * Creates a new game board with empty room and sight line collections. Rooms
+   * and connections must be added separately after construction.
+   */
+  public Board() {
+    this.rooms = new HashMap<>();
+    this.sightLines = new HashMap<>();
+  }
+
+  /**
+   * Adds a room to the board with the specified name.
+   * 
+   * @param room the room to add to the board
+   * @throws IllegalArgumentException if room is null or a room with the same name
+   *                                  already exists
+   */
+  public void addRoom(Room room) {
+    if (room == null) {
+      throw new IllegalArgumentException("Room cannot be null");
     }
-    
-    /**
-     * Adds a room to the board with the specified name.
-     * 
-     * @param room the room to add to the board
-     * @throws IllegalArgumentException if room is null or a room with the same name already exists
-     */
-    public void addRoom(Room room) {
-        if (room == null) {
-            throw new IllegalArgumentException("Room cannot be null");
-        }
-        if (rooms.containsKey(room.getName())) {
-            throw new IllegalArgumentException("Room with name '" + room.getName() + "' already exists");
-        }
-        rooms.put(room.getName(), room);
+    if (rooms.containsKey(room.getName())) {
+      throw new IllegalArgumentException("Room with name '" + room.getName() + "' already exists");
     }
-    
-    /**
-     * Gets a room by its name.
-     * 
-     * @param name the name of the room to retrieve
-     * @return the room with the specified name, or null if no such room exists
-     * @throws IllegalArgumentException if name is null or empty
-     */
-    public Room getRoom(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Room name cannot be null or empty");
-        }
-        return rooms.get(name.trim());
+    rooms.put(room.getName(), room);
+  }
+
+  /**
+   * Gets a room by its name.
+   * 
+   * @param name the name of the room to retrieve
+   * @return the room with the specified name, or null if no such room exists
+   * @throws IllegalArgumentException if name is null or empty
+   */
+  public Room getRoom(String name) {
+    if (name == null || name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Room name cannot be null or empty");
     }
-    
-    /**
-     * Gets all rooms that are directly connected to the specified room.
-     * Connected rooms are those that share a border and allow direct movement.
-     * 
-     * @param room the room to find connections for
-     * @return a list of rooms connected to the specified room
-     * @throws IllegalArgumentException if room is null or not on this board
-     */
-    public List<Room> getAdjacentRooms(Room room) {
-        if (room == null) {
-            throw new IllegalArgumentException("Room cannot be null");
-        }
-        if (!rooms.containsValue(room)) {
-            throw new IllegalArgumentException("Room is not on this board");
-        }
-        
-        return room.getConnections();
+    return rooms.get(name.trim());
+  }
+
+  /**
+   * Gets all rooms that are directly connected to the specified room. Connected
+   * rooms are those that share a border and allow direct movement.
+   * 
+   * @param room the room to find connections for
+   * @return a list of rooms connected to the specified room
+   * @throws IllegalArgumentException if room is null or not on this board
+   */
+  public List<Room> getAdjacentRooms(Room room) {
+    if (room == null) {
+      throw new IllegalArgumentException("Room cannot be null");
     }
-    
-    /**
-     * Gets all rooms on this board.
-     * 
-     * @return a collection containing all rooms on the board
-     */
-    public Collection<Room> getAllRooms() {
-        return new ArrayList<>(rooms.values());
+    if (!rooms.containsValue(room)) {
+      throw new IllegalArgumentException("Room is not on this board");
     }
-    
-    /**
-     * Checks if movement is valid between two rooms.
-     * Movement is valid if the rooms are directly connected.
-     * 
-     * @param from the room to move from
-     * @param to the room to move to
-     * @return true if movement is valid, false otherwise
-     * @throws IllegalArgumentException if either room is null
-     */
-    public boolean isValidMove(Room from, Room to) {
-        if (from == null) {
-            throw new IllegalArgumentException("From room cannot be null");
-        }
-        if (to == null) {
-            throw new IllegalArgumentException("To room cannot be null");
-        }
-        
-        return from.getConnections().contains(to);
+
+    return room.getConnections();
+  }
+
+  /**
+   * Gets all rooms on this board.
+   * 
+   * @return a collection containing all rooms on the board
+   */
+  public Collection<Room> getAllRooms() {
+    return new ArrayList<>(rooms.values());
+  }
+
+  /**
+   * Checks if movement is valid between two rooms. Movement is valid if the rooms
+   * are directly connected.
+   * 
+   * @param from the room to move from
+   * @param to   the room to move to
+   * @return true if movement is valid, false otherwise
+   * @throws IllegalArgumentException if either room is null
+   */
+  public boolean isValidMove(Room from, Room to) {
+    if (from == null) {
+      throw new IllegalArgumentException("From room cannot be null");
     }
-    
-    /**
-     * Calculates whether one occupant can see another occupant.
-     * Visibility is based on being in the same room or having line of sight
-     * through connected rooms based on the sight line configuration.
-     * 
-     * @param viewer the occupant trying to see
-     * @param target the occupant being looked for
-     * @return true if the viewer can see the target, false otherwise
-     * @throws IllegalArgumentException if viewer or target is null
-     */
-    public boolean calculateVisibility(Occupant viewer, Occupant target) {
-        if (viewer == null) {
-            throw new IllegalArgumentException("Viewer cannot be null");
-        }
-        if (target == null) {
-            throw new IllegalArgumentException("Target cannot be null");
-        }
-        
-        Room viewerRoom = viewer.getCurrentRoom();
-        Room targetRoom = target.getCurrentRoom();
-        
-        // Same room - always visible
-        if (viewerRoom.equals(targetRoom)) {
-            return true;
-        }
-        
-        // Check sight lines between rooms
-        String viewerRoomName = viewerRoom.getName();
-        List<String> visibleRoomNames = sightLines.get(viewerRoomName);
-        
-        if (visibleRoomNames != null) {
-            return visibleRoomNames.contains(targetRoom.getName());
-        }
-        
-        // Default: can only see occupants in connected rooms
-        return viewerRoom.getConnections().contains(targetRoom);
+    if (to == null) {
+      throw new IllegalArgumentException("To room cannot be null");
     }
-    
-    /**
-     * Establishes a connection between two rooms, allowing movement between them.
-     * This creates a bidirectional connection - both rooms can reach each other.
-     * 
-     * @param room1 the first room to connect
-     * @param room2 the second room to connect
-     * @throws IllegalArgumentException if either room is null or not on this board
-     */
-    public void connectRooms(Room room1, Room room2) {
-        if (room1 == null || room2 == null) {
-            throw new IllegalArgumentException("Rooms cannot be null");
-        }
-        if (!rooms.containsValue(room1) || !rooms.containsValue(room2)) {
-            throw new IllegalArgumentException("Both rooms must be on this board");
-        }
-        
-        room1.addConnection(room2);
-        room2.addConnection(room1);
+
+    return from.getConnections().contains(to);
+  }
+
+  /**
+   * Calculates whether one occupant can see another occupant. Visibility is based
+   * on being in the same room or having line of sight through connected rooms
+   * based on the sight line configuration.
+   * 
+   * @param viewer the occupant trying to see
+   * @param target the occupant being looked for
+   * @return true if the viewer can see the target, false otherwise
+   * @throws IllegalArgumentException if viewer or target is null
+   */
+  public boolean calculateVisibility(Occupant viewer, Occupant target) {
+    if (viewer == null) {
+      throw new IllegalArgumentException("Viewer cannot be null");
     }
-    
-    /**
-     * Sets up sight lines between rooms for visibility calculations.
-     * Sight lines determine which rooms can see into other rooms beyond
-     * direct connections.
-     * 
-     * @param fromRoom the room that can see
-     * @param visibleRooms list of room names that can be seen from the fromRoom
-     * @throws IllegalArgumentException if fromRoom is null or not on board
-     */
-    public void setSightLines(String fromRoom, List<String> visibleRooms) {
-        if (fromRoom == null || fromRoom.trim().isEmpty()) {
-            throw new IllegalArgumentException("From room name cannot be null or empty");
-        }
-        if (!rooms.containsKey(fromRoom)) {
-            throw new IllegalArgumentException("From room must exist on this board");
-        }
-        if (visibleRooms == null) {
-            throw new IllegalArgumentException("Visible rooms list cannot be null");
-        }
-        
-        sightLines.put(fromRoom, new ArrayList<>(visibleRooms));
+    if (target == null) {
+      throw new IllegalArgumentException("Target cannot be null");
     }
-    
-    /**
-     * Gets the number of rooms on this board.
-     * 
-     * @return the total number of rooms
-     */
-    public int getRoomCount() {
-        return rooms.size();
+
+    Room viewerRoom = viewer.getCurrentRoom();
+    Room targetRoom = target.getCurrentRoom();
+
+    // Same room - always visible
+    if (viewerRoom.equals(targetRoom)) {
+      return true;
     }
-    
-    @Override
-    public String toString() {
-        return String.format("Board{rooms=%d, sightLines=%d}", 
-                           rooms.size(), sightLines.size());
+
+    // Check sight lines between rooms
+    String viewerRoomName = viewerRoom.getName();
+    List<String> visibleRoomNames = sightLines.get(viewerRoomName);
+
+    if (visibleRoomNames != null) {
+      return visibleRoomNames.contains(targetRoom.getName());
     }
+
+    // Default: can only see occupants in connected rooms
+    return viewerRoom.getConnections().contains(targetRoom);
+  }
+
+  /**
+   * Establishes a connection between two rooms, allowing movement between them.
+   * This creates a bidirectional connection - both rooms can reach each other.
+   * 
+   * @param room1 the first room to connect
+   * @param room2 the second room to connect
+   * @throws IllegalArgumentException if either room is null or not on this board
+   */
+  public void connectRooms(Room room1, Room room2) {
+    if (room1 == null || room2 == null) {
+      throw new IllegalArgumentException("Rooms cannot be null");
+    }
+    if (!rooms.containsValue(room1) || !rooms.containsValue(room2)) {
+      throw new IllegalArgumentException("Both rooms must be on this board");
+    }
+
+    room1.addConnection(room2);
+    room2.addConnection(room1);
+  }
+
+  /**
+   * Sets up sight lines between rooms for visibility calculations. Sight lines
+   * determine which rooms can see into other rooms beyond direct connections.
+   * 
+   * @param fromRoom     the room that can see
+   * @param visibleRooms list of room names that can be seen from the fromRoom
+   * @throws IllegalArgumentException if fromRoom is null or not on board
+   */
+  public void setSightLines(String fromRoom, List<String> visibleRooms) {
+    if (fromRoom == null || fromRoom.trim().isEmpty()) {
+      throw new IllegalArgumentException("From room name cannot be null or empty");
+    }
+    if (!rooms.containsKey(fromRoom)) {
+      throw new IllegalArgumentException("From room must exist on this board");
+    }
+    if (visibleRooms == null) {
+      throw new IllegalArgumentException("Visible rooms list cannot be null");
+    }
+
+    sightLines.put(fromRoom, new ArrayList<>(visibleRooms));
+  }
+
+  /**
+   * Gets the number of rooms on this board.
+   * 
+   * @return the total number of rooms
+   */
+  public int getRoomCount() {
+    return rooms.size();
+  }
+
+  @Override
+  public String toString() {
+    return String.format("Board{rooms=%d, sightLines=%d}", rooms.size(), sightLines.size());
+  }
 }
