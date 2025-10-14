@@ -11,11 +11,11 @@ import java.util.Arrays;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
-
 /**
  * Test class for Game functionality. Tests game initialization, player
  * management, turn execution, and win conditions.
  */
+
 public class GameTest {
   private Game game;
   private List<String> validPlayers;

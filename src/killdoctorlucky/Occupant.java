@@ -10,7 +10,7 @@ public interface Occupant {
   /**
    * Get the current room where this occupant is located.
    * 
-   * @return the current room containing this occupant, nevel null
+   * @return the current room containing this occupant, never null
    */
   Room getCurrentRoom();
 

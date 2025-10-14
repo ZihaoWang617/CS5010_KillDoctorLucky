@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 
-
 /**
  * Test class for Board functionality. Tests board initialization, room
  * management, connections, and visibility.

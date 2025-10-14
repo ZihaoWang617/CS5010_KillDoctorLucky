@@ -8,7 +8,7 @@ package killdoctorlucky;
 public interface Playable {
   /**
    * execute this card's effect on the game state. this method is called when a
-   * player plays thsi card during their turn.
+   * player plays this card during their turn.
    * 
    * @param game   the current game instance that will be affected.
    * @param player the playe who is playing this card.
