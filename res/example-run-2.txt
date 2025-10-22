@@ -13,50 +13,25 @@ Welcome to Kill Doctor Lucky!
 Type 'help' for available commands.
 
 > add-human Alice Library
-add-human Bob Kitchen  
-add-computer Bot1 Pantry
-players
-start
-look
-player Alice
-pickup "Sharp Knife"
-move Kitchen
-endturn
-look
-pickup "Deadly Poison"
-player Bob
-endturn
-endturn
-info Kitchen
-move Pantry
-endturn
-endturn
-map world-map.png
-status
-help
-endturn
-endturn
-endturn
-endturn
-endturn
-endturn
-endturn
-endturn
-endturn
-endturnAdded human player: Alice starting in Library.
-> Added human player: Bob starting in Kitchen.
-> Added computer player: Bot1 starting in Pantry.
-> Players in the game:
+Added human player: Alice starting in Library.
+> add-human Bob Kitchen  
+Added human player: Bob starting in Kitchen.
+> add-computer Bot1 Pantry
+Added computer player: Bot1 starting in Pantry.
+> players
+Players in the game:
   - Alice (Human) in Library
   - Bob (Human) in Kitchen
   - Bot1 (Computer) in Pantry
-> Game started with 3 players.
+> start
+Game started with 3 players.
 Maximum turns: 15
 
 Turn 1 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Entrance
-> You are in: Library
+> look
+You are in: Library
 Adjacent rooms (3): Grand Entrance, Study Room, Kitchen
 Items here (1): Sharp Knife
 Visible players (2): Bob, Doctor Lucky
@@ -64,7 +39,8 @@ Visible players (2): Bob, Doctor Lucky
 Turn 1 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Entrance
-> 
+> player Alice
+
 === Player Information ===
 Name: Alice
 Type: Human
@@ -78,21 +54,27 @@ Can pick up: Sharp Knife
 Turn 1 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Entrance
-> Alice picked up Sharp Knife.
+> pickup "Sharp Knife"
+Alice picked up Sharp Knife.
 
 Turn 1 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Entrance
-> Alice moved to Kitchen.
+> move Kitchen
+Alice moved to Kitchen.
 
 Turn 1 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Entrance
 > 
+
+endturn
+
 Turn 2 of 15
 Current player: Bob
 Doctor Lucky is in: Library
-> You are in: Kitchen
+> look
+You are in: Kitchen
 Adjacent rooms (4): Library, Dining Room, Pantry, Music Room
 Items here (1): Deadly Poison
 Visible players (3): Alice, Bot1, Doctor Lucky
@@ -100,12 +82,14 @@ Visible players (3): Alice, Bot1, Doctor Lucky
 Turn 2 of 15
 Current player: Bob
 Doctor Lucky is in: Library
-> Bob picked up Deadly Poison.
+> pickup "Deadly Poison"
+Bob picked up Deadly Poison.
 
 Turn 2 of 15
 Current player: Bob
 Doctor Lucky is in: Library
-> 
+> player Bob
+
 === Player Information ===
 Name: Bob
 Type: Human
@@ -120,7 +104,8 @@ Can move to: Library, Dining Room, Pantry, Music Room
 Turn 2 of 15
 Current player: Bob
 Doctor Lucky is in: Library
-> 
+> endturn
+
 Turn 3 of 15
 Current player: Bot1
 Doctor Lucky is in: Study Room
@@ -129,11 +114,13 @@ Computer player Bot1 is taking their turn...
 Turn 4 of 15
 Current player: Alice
 Doctor Lucky is in: Billiard Room
-> 
+> endturn
+
 Turn 5 of 15
 Current player: Bob
 Doctor Lucky is in: Conservatory
-> 
+> info Kitchen
+
 === Space Information ===
 Name: Kitchen
 Adjacent spaces (4): Library, Dining Room, Pantry, Music Room
@@ -146,12 +133,14 @@ Visible spaces from here: Library, Dining Room, Pantry, Music Room
 Turn 5 of 15
 Current player: Bob
 Doctor Lucky is in: Conservatory
-> Bob moved to Pantry.
+> move Pantry
+Bob moved to Pantry.
 
 Turn 5 of 15
 Current player: Bob
 Doctor Lucky is in: Conservatory
-> 
+> endturn
+
 Turn 6 of 15
 Current player: Bot1
 Doctor Lucky is in: Dining Room
@@ -160,24 +149,28 @@ Computer player Bot1 is taking their turn...
 Turn 7 of 15
 Current player: Alice
 Doctor Lucky is in: Kitchen
-> 
+> endturn
+
 Turn 8 of 15
 Current player: Bob
 Doctor Lucky is in: Pantry
-> Map saved to: world-map.png
+> map world-map.png
+Map saved to: world-map.png
 Map dimensions: 760x520 pixels
 
 Turn 8 of 15
 Current player: Bob
 Doctor Lucky is in: Pantry
-> Game Status: IN_PROGRESS
+> status
+Game Status: IN_PROGRESS
 Turn: 8 / 15
 Current Player: Bob
 
 Turn 8 of 15
 Current player: Bob
 Doctor Lucky is in: Pantry
-> 
+> help
+
 === AVAILABLE COMMANDS ===
 
 SETUP PHASE:
@@ -208,7 +201,8 @@ GENERAL:
 Turn 8 of 15
 Current player: Bob
 Doctor Lucky is in: Pantry
-> 
+> endturn
+
 Turn 9 of 15
 Current player: Bot1
 Doctor Lucky is in: Wine Cellar
@@ -217,11 +211,13 @@ Computer player Bot1 is taking their turn...
 Turn 10 of 15
 Current player: Alice
 Doctor Lucky is in: Servant Quarters
-> 
+> endturn
+
 Turn 11 of 15
 Current player: Bob
 Doctor Lucky is in: Drawing Room
-> 
+> endturn
+
 Turn 12 of 15
 Current player: Bot1
 Doctor Lucky is in: Music Room
@@ -230,11 +226,13 @@ Computer player Bot1 is taking their turn...
 Turn 13 of 15
 Current player: Alice
 Doctor Lucky is in: Grand Ballroom
-> 
+> endturn
+
 Turn 14 of 15
 Current player: Bob
 Doctor Lucky is in: Art Gallery
-> 
+> endturn
+
 Turn 15 of 15
 Current player: Bot1
 Doctor Lucky is in: Trophy Room

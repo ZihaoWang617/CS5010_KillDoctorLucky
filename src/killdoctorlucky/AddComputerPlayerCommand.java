@@ -15,18 +15,19 @@ public class AddComputerPlayerCommand implements Command {
    * command to add compouter player into game.
    * @param playerName the computer player's name (non-null, non-blank)
    * @param startRoomName the starting room (non-null, must exist)
-   * @param rng random generator used by the computer player (non-null)
+   * @param randonaGenerator random generator used by the computer player (non-null)
    */
-  public AddComputerPlayerCommand(String playerName, String startRoomName, RandomGenerator rng) {
+  public AddComputerPlayerCommand(String playerName, String startRoomName, 
+      RandomGenerator randonaGenerator) {
     if (playerName == null || playerName.trim().isEmpty()) {
       throw new IllegalArgumentException("Player name cannot be null or blank");
     }
-    if (startRoomName == null || rng == null) {
+    if (startRoomName == null || randonaGenerator == null) {
       throw new IllegalArgumentException("Start room and RNG must be non-null");
     }
     this.player = playerName.trim();
     this.startRoom = startRoomName.trim();
-    this.rng = rng;
+    this.rng = randonaGenerator;
   }
 
   @Override
