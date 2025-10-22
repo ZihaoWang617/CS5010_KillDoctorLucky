@@ -1,16 +1,15 @@
 package killdoctorlucky;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 /**
  * Test class for DoctorLucky functionality.
+ * Tests movement, position tracking, and player interactions.
  */
 public class DoctorLuckyTest {
   private Room kitchen;
@@ -21,10 +20,8 @@ public class DoctorLuckyTest {
   
   /**
    * Sets up the test fixture before each test.
-   * Initializes Room objects (kitchen, dining, living) with connections between them
-   * and creates a DoctorLucky instance starting in the kitchen.
+   * Initializes Room objects and creates a DoctorLucky instance.
    */
-  
   @Before
   public void setUp() {
     kitchen = new Room("Kitchen", true);
@@ -32,62 +29,71 @@ public class DoctorLuckyTest {
     living = new Room("Living Room", true);
 
     kitchen.addConnection(dining);
+    dining.addConnection(kitchen);
     dining.addConnection(living);
+    living.addConnection(dining);
 
     doctor = new DoctorLucky(kitchen);
   }
 
+  /**
+   * Tests DoctorLucky creation in a room.
+   */
   @Test
   public void testDoctorCreation() {
-    assertEquals(kitchen, doctor.getCurrentRoom());
-    assertTrue(kitchen.isOccupiedBy(doctor));
+    Assert.assertEquals(kitchen, doctor.getCurrentRoom());
+    Assert.assertTrue(kitchen.getOccupants().contains(doctor));
   }
 
+  /**
+   * Tests sequential movement through rooms.
+   */
   @Test
   public void testSequentialMovement() {
-    // Set movement sequence
     List<Room> sequence = new ArrayList<>();
     sequence.add(kitchen);
     sequence.add(dining);
     sequence.add(living);
     doctor.setMovementSequence(sequence);
 
-    // Test circular movement
-    assertEquals(kitchen, doctor.getCurrentRoom());
+    Assert.assertEquals(kitchen, doctor.getCurrentRoom());
 
     doctor.moveNext();
-    assertEquals(dining, doctor.getCurrentRoom());
+    Assert.assertEquals(dining, doctor.getCurrentRoom());
 
     doctor.moveNext();
-    assertEquals(living, doctor.getCurrentRoom());
+    Assert.assertEquals(living, doctor.getCurrentRoom());
 
     doctor.moveNext();
-    assertEquals(kitchen, doctor.getCurrentRoom()); // Back to start
+    Assert.assertEquals(kitchen, doctor.getCurrentRoom());
   }
 
+  /**
+   * Tests isAloneWith returns true when only player and doctor in room.
+   */
   @Test
   public void testIsAloneWithTrue() {
     alice = new Player("Alice", kitchen);
-
-    // Only Alice and Doctor Lucky in kitchen
-    assertTrue(doctor.isAloneWith(alice));
+    Assert.assertTrue(doctor.isAloneWith(alice));
   }
 
+  /**
+   * Tests isAloneWith returns false with multiple players.
+   */
   @Test
   public void testIsAloneWithFalse() {
     alice = new Player("Alice", kitchen);
     Player bob = new Player("Bob", kitchen);
-
-    // Multiple players in room
-    assertFalse(doctor.isAloneWith(alice));
-    assertFalse(doctor.isAloneWith(bob));
+    Assert.assertFalse(doctor.isAloneWith(alice));
+    Assert.assertFalse(doctor.isAloneWith(bob));
   }
 
+  /**
+   * Tests isAloneWith when in different rooms.
+   */
   @Test
   public void testIsAloneWithDifferentRooms() {
     alice = new Player("Alice", dining);
-
-    // Doctor in kitchen, Alice in dining
-    assertFalse(doctor.isAloneWith(alice));
+    Assert.assertFalse(doctor.isAloneWith(alice));
   }
 }

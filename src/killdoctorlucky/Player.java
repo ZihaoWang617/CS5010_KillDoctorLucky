@@ -9,9 +9,14 @@ import java.util.List;
  * player has a name, current location, and a hand of playable cards.
  */
 public class Player implements Movable, Occupant {
+  
+  private static final int DEFAULT_MAX_CARRY = 3;
+  
   private final String name;
   private Room currentRoom;
-  private final List<Playable> hand;
+  private final List<Playable> hand; 
+  private final List<Item> inventory = new ArrayList<>();
+  private final int maxCarry = DEFAULT_MAX_CARRY;
 
   /**
    * Creates a new player with the specified name in the given starting room. The
@@ -34,7 +39,6 @@ public class Player implements Movable, Occupant {
     this.currentRoom = startingRoom;
     this.hand = new ArrayList<>();
 
-    // Add this player to the starting room's occupants
     startingRoom.addOccupant(this);
   }
 
@@ -163,7 +167,6 @@ public class Player implements Movable, Occupant {
    * @return true (players can always draw cards)
    */
   public boolean canDrawCard() {
-    // Based on game rules, there's no hand size limit
     return true;
   }
 
@@ -193,11 +196,71 @@ public class Player implements Movable, Occupant {
     // Otherwise, use board's visibility calculation
     return board.calculateVisibility(other, this);
   }
+  
+  /**
+   * Return a copy of the player's caried items.
+   * @return inventory's value.
+   */
+  public List<Item> getInventory() {
+    return new ArrayList<>(inventory);
+  }
+  
+  /**
+   * Gets the maximum number of items this player can carry.
+   * @return the maxmum number of items.
+   */
+  public int getMaxCarry() {
+    return maxCarry;
+  }
+  
+  /** Returns true if the player can carry more items. 
+   * @return true or false if player can carry more items.
+   */
+  public boolean canCarryMore() {
+    return inventory.size() < maxCarry;
+  }
+
+  /**
+   * Attempts to pick up the given item and add it to this player's inventory.
+   *
+   * @param item the item to pick up
+   * @return true if successful, false if null or at capacity
+   */
+  public boolean pickUpItem(Item item) {
+    if (item == null || !canCarryMore()) {
+      return false;
+    }
+    inventory.add(item);
+    item.setRoom(null);
+    return true;
+  }
+
+  /**
+   * Removes and returns an item by name from the inventory, or null if not found.
+   *
+   * @param itemName the name of the item to remove
+   * @return the removed Item, or null if not found
+   * @throws IllegalArgumentException if itemName is null or empty
+   */
+  public Item dropItem(String itemName) {
+    if (itemName == null || itemName.trim().isEmpty()) {
+      throw new IllegalArgumentException("Item name cannot be null or empty");
+    }
+    for (int i = 0; i < inventory.size(); i++) {
+      Item it = inventory.get(i);
+      if (itemName.equals(it.getName())) {
+        inventory.remove(i);
+        return it;
+      }
+    }
+    return null;
+  }
 
   @Override
   public String toString() {
-    return String.format("Player{name='%s', room='%s', cards=%d}", name, currentRoom.getName(),
-        hand.size());
+    return String.format(
+        "Player{name='%s', room='%s', cards=%d, items=%d/%d}",
+        name, currentRoom.getName(), hand.size(), inventory.size(), maxCarry);
   }
 
   @Override

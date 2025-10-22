@@ -1,0 +1,31 @@
+add-human Alice Library
+add-human Bob Kitchen
+add-computer Bot1 Pantry
+players
+spaces
+start
+look
+pickup "Sharp Knife"
+player Alice
+move Kitchen
+endturn
+look
+pickup "Deadly Poison"
+endturn
+endturn
+info Kitchen
+move Library
+endturn
+player Bob
+move Pantry
+endturn
+endturn
+map world-map.png
+status
+move Kitchen
+endturn
+look
+endturn
+endturn
+help
+quit
