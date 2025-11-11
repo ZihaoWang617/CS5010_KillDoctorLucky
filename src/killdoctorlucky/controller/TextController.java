@@ -8,14 +8,6 @@ import java.util.Scanner;
  * Text-based controller: reads commands from a {@link Readable}, writes to an
  * {@link Appendable}, and executes commands against the {@link Game} model.
  *
- * <p>Phases:</p>
- * <ul>
- *   <li><b>SETUP</b>: {@code add-human <name> <room>}, 
- *   {@code add-computer <name> <room>}, {@code start}</li>
- *   <li><b>PLAY</b>: {@code look}, {@code move <room>}, {@code pickup <item>}, 
- *   {@code endturn}, {@code info <space>}, {@code player <name>}, {@code map <filename>}</li>
- *   <li><b>ANYTIME</b>: {@code help}, {@code quit}</li>
- * </ul>
  */
 public class TextController {
 

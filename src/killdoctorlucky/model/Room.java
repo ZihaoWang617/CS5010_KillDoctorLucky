@@ -15,8 +15,11 @@ public class Room {
   private final boolean isNamedRoom;
   private final List<Room> connectedRooms;
   private final List<Occupant> occupants;
-  // Items currently in this room
   private final List<Item> items = new ArrayList<>();
+  private int colIndex = 0;
+  private int rowIndex = 0;
+  private int width = 4;
+  private int height = 3;
 
   /**
    * Constructs a room with the given name.
@@ -34,7 +37,8 @@ public class Room {
     this.connectedRooms = new ArrayList<>();
     this.occupants = new ArrayList<>();
   }
-
+  
+  
   /**
    * Gets the name of this room.
    *
@@ -169,6 +173,82 @@ public class Room {
     }
     return occupants.contains(occupant);
   }
+  
+  /**
+   * Sets the room geometry using world coordinates.
+   * Treats {@code x} as column and {@code y} as row (top-left origin).
+   *
+   * @param xcord      left/top column index
+   * @param ycord      top/left row index
+   * @param widthMap  width in world units (must be &gt; 0)
+   * @param heightMap height in world units (must be &gt; 0)
+   * @throws IllegalArgumentException if width or height are not positive
+   */
+  public void setGeometry(int xcord, int ycord, int widthMap, int heightMap) {
+    if (width <= 0 || height <= 0) {
+      throw new IllegalArgumentException("Room width/height must be positive");
+    }
+    this.colIndex = xcord;
+    this.rowIndex = ycord;
+    this.width = widthMap;
+    this.height = heightMap;
+  }
+
+  /**
+   * Sets the room geometry using inclusive corner coordinates as defined
+   * by the world file: {@code (row1, col1)} (top-left) and
+   * {@code (row2, col2)} (bottom-right), both inclusive.
+   * <p>Width/height are computed as {@code (col2 - col1 + 1)} and
+   * {@code (row2 - row1 + 1)} respectively.</p>
+   *
+   * @param row1 top row (inclusive)
+   * @param col1 left column (inclusive)
+   * @param row2 bottom row (inclusive)
+   * @param col2 right column (inclusive)
+   * @throws IllegalArgumentException if computed width/height are not positive
+   */
+  public void setGeometryByCorners(int row1, int col1, int row2, int col2) {
+    int w = (col2 - col1) + 1;
+    int h = (row2 - row1) + 1;
+    setGeometry(col1, row1, w, h); // x = col, y = row
+  }
+
+  /**
+   * Returns the left/top column index (x).
+   *
+   * @return the x coordinate in world units
+   */
+  public int getX() {
+    return colIndex;
+  }
+
+  /**
+   * Returns the top/left row index (y).
+   *
+   * @return the y coordinate in world units
+   */
+  public int getY() {
+    return rowIndex;
+  }
+
+  /**
+   * Returns the room width in world units.
+   *
+   * @return width in world units
+   */
+  public int getWidth() {
+    return width;
+  }
+
+  /**
+   * Returns the room height in world units.
+   *
+   * @return height in world units
+   */
+  public int getHeight() {
+    return height;
+  }
+
 
   @Override
   public String toString() {

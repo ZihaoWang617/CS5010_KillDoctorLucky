@@ -49,7 +49,6 @@ public class WorldParser {
         throw new IllegalArgumentException("Invalid world line format");
       }
 
-      // Validate but don't store yet (will be used in future milestones)
       Integer.parseInt(worldParts[0]); // rows
       Integer.parseInt(worldParts[1]); // cols
       // String worldName = worldParts[2]; // will be used later
@@ -64,25 +63,23 @@ public class WorldParser {
         throw new IllegalArgumentException("Invalid target format");
       }
 
-      // Validate but don't store yet (will be used in future milestones)
       Integer.parseInt(targetParts[0]); // targetHealth
       // String targetName = targetParts[1]; // will be used later
 
-      // Step 3: Parse number of rooms
+      // Step 3: rooms count
       String roomCountLine = reader.readLine();
       if (roomCountLine == null) {
         throw new IllegalArgumentException("Missing room count");
       }
       int numRooms = Integer.parseInt(roomCountLine.trim());
 
-      // Step 4: Parse each room
+      // Step 4: rooms
       List<RoomData> roomDataList = new ArrayList<>();
       for (int i = 0; i < numRooms; i++) {
         String roomLine = reader.readLine();
         if (roomLine == null) {
           throw new IllegalArgumentException("Missing room data at index " + i);
         }
-
         String[] parts = roomLine.trim().split("\\s+", 5);
         if (parts.length < 5) {
           throw new IllegalArgumentException("Invalid room format: " + roomLine);
@@ -97,14 +94,14 @@ public class WorldParser {
         roomDataList.add(new RoomData(row1, col1, row2, col2, roomName));
       }
 
-      // Step 5: Parse number of items
+      // Step 5: items count
       String itemCountLine = reader.readLine();
       if (itemCountLine == null) {
         throw new IllegalArgumentException("Missing item count");
       }
       int numItems = Integer.parseInt(itemCountLine.trim());
 
-      // Step 6: Parse each item (store data, don't add to rooms yet)
+      // Step 6: items
       List<ItemData> itemDataList = new ArrayList<>();
       for (int i = 0; i < numItems; i++) {
         String itemLine = reader.readLine();
@@ -124,35 +121,77 @@ public class WorldParser {
         itemDataList.add(new ItemData(roomIndex, itemName, damage));
       }
 
-      // Step 7: Build Board and create all rooms
+      // Step 7: build board & rooms
       Board board = new Board();
       List<Room> rooms = new ArrayList<>();
 
-      // Create all rooms
       for (RoomData data : roomDataList) {
         Room room = new Room(data.name, true);
+        // Bind geometry for map rendering (inclusive corners).
+        room.setGeometryByCorners(data.row1, data.col1, data.row2, data.col2);
         rooms.add(room);
         board.addRoom(room);
       }
 
-      // Step 8: Establish connections between neighboring rooms
+      // Step 8: connect neighboring rooms (share edge)
       for (int i = 0; i < roomDataList.size(); i++) {
         for (int j = i + 1; j < roomDataList.size(); j++) {
-          RoomData room1 = roomDataList.get(i);
-          RoomData room2 = roomDataList.get(j);
-
-          if (areNeighbors(room1, room2)) {
+          RoomData a = roomDataList.get(i);
+          RoomData b = roomDataList.get(j);
+          if (areNeighbors(a, b)) {
             board.connectRooms(rooms.get(i), rooms.get(j));
           }
         }
       }
 
-      // Step 9: Add items to their corresponding rooms
+      // Step 9: place items
       for (ItemData itemData : itemDataList) {
         Item item = new Item(itemData.name, itemData.damage);
         if (itemData.roomIndex >= 0 && itemData.roomIndex < rooms.size()) {
           rooms.get(itemData.roomIndex).addItem(item);
         }
+      }
+
+      // Step 10 (optional): parse sight lines block
+      // Format:
+      // SIGHT
+      // From : To1, To2, ...
+      // ...
+      // END
+      reader.mark(4096);
+      String maybeSight = reader.readLine();
+      if (maybeSight != null && maybeSight.trim().equalsIgnoreCase("SIGHT")) {
+        String line;
+        while ((line = reader.readLine()) != null) {
+          String trimmed = line.trim();
+          if ("END".equalsIgnoreCase(trimmed)) {
+            break;
+          }
+          if (trimmed.isEmpty()) {
+            continue;
+          }
+
+          String[] pair = trimmed.split(":");
+          if (pair.length != 2) {
+            // skip malformed line, but continue parsing the rest
+            continue;
+          }
+          String from = pair[0].trim();
+          String[] toParts = pair[1].split(",");
+          List<String> toRooms = new ArrayList<>();
+          for (String t : toParts) {
+            String name = t.trim();
+            if (!name.isEmpty()) {
+              toRooms.add(name);
+            }
+          }
+          if (!toRooms.isEmpty()) {
+            board.setSightLines(from, toRooms);
+          }
+        }
+      } else {
+        // No SIGHT block — rewind so callers can read anything after items if needed
+        reader.reset();
       }
 
       return new WorldData(board, rooms);
@@ -163,8 +202,8 @@ public class WorldParser {
   }
 
   /**
-   * Container for parsed world data including the board and room sequence. This
-   * allows Doctor Lucky to be initialized with the correct movement sequence.
+   * Container for parsed world data including the board and room sequence.
+   * This allows Doctor Lucky to be initialized with the correct movement order.
    */
   public static class WorldData {
     public final Board board;
@@ -172,10 +211,9 @@ public class WorldParser {
 
     /**
      * Creates a new WorldData container.
-     * 
-     * @param gameBoard        the game board with all rooms and connections
-     * @param orderedRooms the ordered list of rooms as they appear in the
-     *                     specification
+     *
+     * @param gameBoard   the game board with all rooms and connections
+     * @param orderedRooms the ordered list of rooms as they appear in the file
      */
     public WorldData(Board gameBoard, List<Room> orderedRooms) {
       this.board = gameBoard;
@@ -188,20 +226,20 @@ public class WorldParser {
    * if they share at least one edge.
    */
   private static boolean areNeighbors(RoomData room1, RoomData room2) {
-    // Check if rooms share a vertical edge
-    boolean shareVerticalEdge = (room1.col2 + 1 == room2.col1 || room1.col1 == room2.col2 + 1)
+    // Share a vertical edge?
+    boolean shareVertical = (room1.col2 + 1 == room2.col1
+        || room1.col1 == room2.col2 + 1)
         && !(room1.row2 < room2.row1 || room2.row2 < room1.row1);
 
-    // Check if rooms share a horizontal edge
-    boolean shareHorizontalEdge = (room1.row2 + 1 == room2.row1 || room1.row1 == room2.row2 + 1)
+    // Share a horizontal edge?
+    boolean shareHorizontal = (room1.row2 + 1 == room2.row1
+        || room1.row1 == room2.row2 + 1)
         && !(room1.col2 < room2.col1 || room2.col2 < room1.col1);
 
-    return shareVerticalEdge || shareHorizontalEdge;
+    return shareVertical || shareHorizontal;
   }
 
-  /**
-   * Helper class to store room coordinate data during parsing.
-   */
+  /** Helper for room coordinate data. */
   private static class RoomData {
     final int row1;
     final int col1;
@@ -209,7 +247,8 @@ public class WorldParser {
     final int col2;
     final String name;
 
-    RoomData(int firstRow, int firstColumn, int secondRow, int secondColumn, String roomName) {
+    RoomData(int firstRow, int firstColumn, int secondRow, int secondColumn,
+        String roomName) {
       this.row1 = firstRow;
       this.col1 = firstColumn;
       this.row2 = secondRow;
@@ -218,9 +257,7 @@ public class WorldParser {
     }
   }
 
-  /**
-   * Helper class to store item data during parsing.
-   */
+  /** Helper for item data. */
   private static class ItemData {
     final int roomIndex;
     final String name;

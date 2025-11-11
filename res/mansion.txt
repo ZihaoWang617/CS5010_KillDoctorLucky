@@ -42,3 +42,30 @@
 17 5 Farmer Scythe
 18 6 Neptune Trident
 19 8 Medieval Halberd
+SIGHT
+Grand Entrance : Dining Room, Library
+Dining Room : Grand Entrance, Drawing Room, Kitchen
+Drawing Room : Dining Room, Master Bedroom, Music Room
+Master Bedroom : Drawing Room, Guest Bedroom
+
+Library : Grand Entrance, Kitchen, Study Room
+Kitchen : Dining Room, Music Room, Pantry, Library
+Music Room : Kitchen, Guest Bedroom, Grand Ballroom, Drawing Room
+Guest Bedroom : Music Room, Luxury Bathroom, Master Bedroom
+
+Study Room : Library, Pantry, Billiard Room
+Pantry : Kitchen, Grand Ballroom, Wine Cellar, Study Room
+Grand Ballroom : Music Room, Luxury Bathroom, Art Gallery, Pantry
+Luxury Bathroom : Guest Bedroom, Dressing Room, Grand Ballroom
+
+Billiard Room : Study Room, Wine Cellar, Conservatory
+Wine Cellar : Pantry, Art Gallery, Servant Quarters, Billiard Room
+Art Gallery : Grand Ballroom, Dressing Room, Trophy Room, Wine Cellar
+Dressing Room : Luxury Bathroom, Storage Attic, Art Gallery
+
+Conservatory : Billiard Room, Servant Quarters
+Servant Quarters : Wine Cellar, Trophy Room, Conservatory
+Trophy Room : Art Gallery, Storage Attic, Servant Quarters
+Storage Attic : Dressing Room, Trophy Room
+END
+

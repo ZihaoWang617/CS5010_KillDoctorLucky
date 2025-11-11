@@ -5,7 +5,7 @@ import java.io.IOException;
 /** Command that lets the current player pick up an item from the current room. */
 public class PickUpItemCommand implements Command {
 
-  private final String item; // 目标物品名（字段名与参数名不同，避免隐藏）
+  private final String item; 
 
   /**
    * command to pick up the item.

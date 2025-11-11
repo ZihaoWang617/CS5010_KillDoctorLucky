@@ -169,7 +169,6 @@ public class TextControllerTest {
 
   @Test
   public void testHelpCommand() {
-    // Test help command displays available commands
     String input = "help\nquit\n";
     StringReader reader = new StringReader(input);
     StringBuilder output = new StringBuilder();
@@ -185,7 +184,6 @@ public class TextControllerTest {
 
   @Test
   public void testEndTurnCommand() {
-    // Test ending a turn
     String input = "add-human Alice Library\nstart\nendturn\nquit\n";
     StringReader reader = new StringReader(input);
     StringBuilder output = new StringBuilder();

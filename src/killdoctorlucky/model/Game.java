@@ -170,8 +170,6 @@ public class Game {
     }
   }
 
-  /* ==== Milestone 2: Item pickup from room ==== */
-
   /**
    * Tries to move an item by name from the current room into the player's inventory.
    * If the player lacks capacity, the item is restored to the room.
@@ -200,8 +198,6 @@ public class Game {
     }
     return true;
   }
-
-  /* ==== Milestone 2: Look around description ==== */
 
   /**
    * Produces a textual description for what the given player can observe:
@@ -269,8 +265,6 @@ public class Game {
 
     return sb.toString();
   }
-
-  /* ==== Win/lose hooks (stubs you can expand) ==== */
 
   /**
    * check if the game is over.

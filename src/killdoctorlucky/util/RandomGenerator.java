@@ -7,7 +7,7 @@ import java.util.Random;
  * a predictable, cycling sequence for tests.
  */
 public class RandomGenerator {
-  private final Random rnd;    // used when no sequence is provided
+  private final Random rnd;
   private final int[] sequence;
   private int idx;
 

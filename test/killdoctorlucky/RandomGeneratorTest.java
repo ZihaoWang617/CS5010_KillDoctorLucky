@@ -29,7 +29,7 @@ public class RandomGeneratorTest {
     Assert.assertEquals(5, rng.nextInt(10));
     Assert.assertEquals(3, rng.nextInt(10));
     Assert.assertEquals(7, rng.nextInt(10));
-    Assert.assertEquals(5, rng.nextInt(10)); // Cycles back
+    Assert.assertEquals(5, rng.nextInt(10)); 
   }
   
   /**

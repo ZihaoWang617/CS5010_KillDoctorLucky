@@ -191,6 +191,33 @@ public class Board {
   public int getRoomCount() {
     return rooms.size();
   }
+  
+  /** Returns the list of rooms visible from the given room name (copy). 
+   * @param fromRoom the name of the room whose visible rooms should be returned
+   * @return a list of room names visible from the specified room (never null)
+   * @throws IllegalArgumentException if {@code fromRoom} is null or empty
+   */
+  public List<String> getSightLinesFrom(String fromRoom) {
+    if (fromRoom == null || fromRoom.trim().isEmpty()) {
+      throw new IllegalArgumentException("From room name cannot be null or empty");
+    }
+    List<String> v = sightLines.get(fromRoom.trim());
+    return v == null ? new ArrayList<>() : new ArrayList<>(v);
+  }
+
+  /**
+   * Returns a read-only snapshot of all sight lines in the board.
+   * Each key is a room name, and each value is the list of rooms visible from it.
+   *
+   * @return a map of room names to their visible rooms (deep copy)
+   */
+  public Map<String, List<String>> getAllSightLines() {
+    Map<String, List<String>> copy = new HashMap<>();
+    for (Map.Entry<String, List<String>> e : sightLines.entrySet()) {
+      copy.put(e.getKey(), new ArrayList<>(e.getValue()));
+    }
+    return copy;
+  }
 
   @Override
   public String toString() {
