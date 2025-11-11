@@ -1,4 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.model.cards;
+
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Abstract base class for all cards in the Kill Doctor Lucky game. Cards are

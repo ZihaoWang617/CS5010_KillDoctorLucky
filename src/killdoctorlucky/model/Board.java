@@ -1,10 +1,11 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import killdoctorlucky.model.occupants.Occupant;
 
 /**
  * Represents the game board containing all rooms and their spatial

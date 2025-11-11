@@ -1,4 +1,6 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
+
+import killdoctorlucky.model.Game;
 
 /**
  * Represents a user or AI command that performs an action on the game model.

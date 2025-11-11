@@ -1,6 +1,9 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
+import java.util.random.RandomGenerator;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Room;
 
 /**
  * Command to add a computer-controlled player during setup.

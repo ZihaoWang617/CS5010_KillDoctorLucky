@@ -1,7 +1,13 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import killdoctorlucky.model.cards.Playable;
+import killdoctorlucky.model.cards.WeaponCard;
+import killdoctorlucky.model.occupants.ComputerPlayer;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Player;
+import killdoctorlucky.util.RandomGenerator;
 
 
 /**

@@ -1,4 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.model.cards;
+
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Represents a failure card that can be used to block murder attempts. Failure

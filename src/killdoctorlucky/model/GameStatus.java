@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 /**
  * Enumeration representing the current lifecycle state of a Kill Doctor Lucky

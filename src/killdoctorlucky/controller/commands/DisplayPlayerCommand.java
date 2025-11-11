@@ -1,7 +1,15 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
 import java.util.List;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Item;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.cards.Playable;
+import killdoctorlucky.model.occupants.ComputerPlayer;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Occupant;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Command to display detailed information about a specific player.

@@ -1,7 +1,8 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import killdoctorlucky.model.occupants.Occupant;
 
 
 /**

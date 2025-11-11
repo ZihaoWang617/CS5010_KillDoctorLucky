@@ -1,4 +1,6 @@
-package killdoctorlucky;
+package killdoctorlucky.model.interfaces;
+
+import killdoctorlucky.model.Room;
 
 /**
  * Interface for game entities that can move between different rooms in the

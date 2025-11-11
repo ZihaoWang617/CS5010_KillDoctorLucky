@@ -1,7 +1,13 @@
-package killdoctorlucky;
+package killdoctorlucky.model.occupants;
 
 import java.util.ArrayList;
 import java.util.List;
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Item;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.cards.Playable;
+import killdoctorlucky.model.cards.WeaponCard;
+import killdoctorlucky.model.interfaces.Movable;
 
 /**
  * Represents a player in the Kill Doctor Lucky game. Players can move between

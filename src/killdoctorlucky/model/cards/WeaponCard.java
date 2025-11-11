@@ -1,4 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.model.cards;
+
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Represents a weapon card that can be used in murder attempts. Weapon cards

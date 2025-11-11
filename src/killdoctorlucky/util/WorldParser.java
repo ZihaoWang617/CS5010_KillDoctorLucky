@@ -1,10 +1,13 @@
-package killdoctorlucky;
+package killdoctorlucky.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Item;
+import killdoctorlucky.model.Room;
 
 /**
  * Parses world specification files to create game worlds. Reads the mansion

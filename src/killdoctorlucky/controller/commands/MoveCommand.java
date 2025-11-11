@@ -1,7 +1,10 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
 import java.util.List;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Command that moves the current player to an adjacent room by name.

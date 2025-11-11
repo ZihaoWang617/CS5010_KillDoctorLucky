@@ -1,8 +1,12 @@
-package killdoctorlucky;
+package killdoctorlucky.controller;
 
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import killdoctorlucky.model.Deck;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.util.WorldParser;
 
 /**
  * Main driver class for Kill Doctor Lucky game.

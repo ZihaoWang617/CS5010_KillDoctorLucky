@@ -1,10 +1,15 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
+import killdoctorlucky.model.cards.FailureCard;
+import killdoctorlucky.model.cards.MoveCard;
+import killdoctorlucky.model.cards.Playable;
+import killdoctorlucky.model.cards.RoomCard;
+import killdoctorlucky.model.cards.WeaponCard;
 
 /**
  * Represents the deck of cards in the Kill Doctor Lucky game. The deck manages

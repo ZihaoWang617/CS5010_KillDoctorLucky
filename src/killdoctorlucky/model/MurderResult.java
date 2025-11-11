@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 /**
  * Enumeration representing all possible outcomes when a player attempts to

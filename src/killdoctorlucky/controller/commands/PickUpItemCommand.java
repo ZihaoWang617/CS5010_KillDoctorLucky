@@ -1,6 +1,8 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.Player;
 
 /** Command that lets the current player pick up an item from the current room. */
 public class PickUpItemCommand implements Command {

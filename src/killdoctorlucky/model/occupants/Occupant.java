@@ -1,4 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.model.occupants;
+
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Room;
 
 /**
  * Interface for entities that can occupy rooms and interact with the visibility

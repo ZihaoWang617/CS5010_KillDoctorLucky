@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -13,6 +13,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.imageio.ImageIO;
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Item;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Occupant;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Command that creates a PNG map of the current world using the

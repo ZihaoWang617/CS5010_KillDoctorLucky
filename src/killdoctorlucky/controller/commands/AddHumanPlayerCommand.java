@@ -1,6 +1,8 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Room;
 
 /**
  * Command to add a human player to the game during setup.

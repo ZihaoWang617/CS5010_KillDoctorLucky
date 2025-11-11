@@ -1,7 +1,10 @@
-package killdoctorlucky;
+package killdoctorlucky.model.occupants;
 
 import java.util.ArrayList;
 import java.util.List;
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.interfaces.Movable;
 
 /**
  * Represents Doctor Lucky, the target character in the Kill Doctor Lucky game.

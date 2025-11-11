@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.util;
 
 import java.util.Random;
 

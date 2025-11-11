@@ -1,4 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.model.cards;
+
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.occupants.Player;
 
 /**
  * Interface for game objects that can be played as cards in the game. Playable

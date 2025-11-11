@@ -1,8 +1,22 @@
-package killdoctorlucky;
+package killdoctorlucky.controller;
 
 import java.io.IOException;
 import java.util.Locale;
 import java.util.Scanner;
+import killdoctorlucky.controller.commands.AddComputerPlayerCommand;
+import killdoctorlucky.controller.commands.AddHumanPlayerCommand;
+import killdoctorlucky.controller.commands.CreateMapCommand;
+import killdoctorlucky.controller.commands.DisplayPlayerCommand;
+import killdoctorlucky.controller.commands.DisplaySpaceCommand;
+import killdoctorlucky.controller.commands.LookAroundCommand;
+import killdoctorlucky.controller.commands.MoveCommand;
+import killdoctorlucky.controller.commands.PickUpItemCommand;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.GameStatus;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.occupants.ComputerPlayer;
+import killdoctorlucky.model.occupants.Player;
+import killdoctorlucky.util.RandomGenerator;
 
 /**
  * Text-based controller: reads commands from a {@link Readable}, writes to an

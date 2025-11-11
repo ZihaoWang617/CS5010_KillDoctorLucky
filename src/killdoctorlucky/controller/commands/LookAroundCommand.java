@@ -1,6 +1,7 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
+import killdoctorlucky.model.Game;
 
 /**
  * Command to let the current player look around their surroundings.

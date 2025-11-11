@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 /**
  * Represents an item in the game world that can be used as a weapon. Items have
