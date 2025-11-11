@@ -224,4 +224,71 @@ public class Board {
   public String toString() {
     return String.format("Board{rooms=%d, sightLines=%d}", rooms.size(), sightLines.size());
   }
+  
+  /**
+   * Checks if a room is blocked by the pet, making it invisible to neighboring rooms.
+   * A room with the pet cannot be seen into by players in adjacent rooms.
+   * 
+   * @param room the room to check
+   * @param pet the pet that may be blocking visibility
+   * @return true if the pet is in the room (making it invisible to neighbors)
+   * @throws IllegalArgumentException if room or pet is null
+   */
+  public boolean isRoomBlockedByPet(Room room, killdoctorlucky.model.occupants.Pet pet) {
+    if (room == null) {
+      throw new IllegalArgumentException("Room cannot be null");
+    }
+    if (pet == null) {
+      throw new IllegalArgumentException("Pet cannot be null");
+    }
+
+    // A room is blocked if the pet is currently in it
+    return pet.getCurrentRoom().equals(room);
+  }
+
+  /**
+   * Gets all rooms that are neighbors of the specified room.
+   * This is an alias for getAdjacentRooms for clarity in pet-related logic.
+   * 
+   * @param room the room to get neighbors for
+   * @return list of neighboring rooms
+   * @throws IllegalArgumentException if room is null
+   */
+  public List<Room> getNeighboringRooms(Room room) {
+    return getAdjacentRooms(room);
+  }
+
+  /**
+   * Checks if a player in fromRoom can see into toRoom.
+   * Takes into account pet location - if pet is in toRoom, it cannot be seen into.
+   * 
+   * @param fromRoom the room the viewer is in
+   * @param toRoom the room being looked into
+   * @param pet the pet that may block visibility
+   * @return true if toRoom can be seen from fromRoom
+   * @throws IllegalArgumentException if any parameter is null
+   */
+  public boolean canSeeIntoRoom(Room fromRoom, Room toRoom, 
+      killdoctorlucky.model.occupants.Pet pet) {
+    if (fromRoom == null || toRoom == null) {
+      throw new IllegalArgumentException("Rooms cannot be null");
+    }
+    if (pet == null) {
+      throw new IllegalArgumentException("Pet cannot be null");
+    }
+
+    // Same room - always can see
+    if (fromRoom.equals(toRoom)) {
+      return true;
+    }
+
+    // If pet is in the target room, it's blocked from neighbors
+    if (isRoomBlockedByPet(toRoom, pet)) {
+      return false;
+    }
+
+    // Otherwise check if rooms are adjacent
+    return fromRoom.getConnections().contains(toRoom);
+  }
+  
 }

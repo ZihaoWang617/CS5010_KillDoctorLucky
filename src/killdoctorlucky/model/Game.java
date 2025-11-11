@@ -3,17 +3,16 @@ package killdoctorlucky.model;
 import java.util.ArrayList;
 import java.util.List;
 import killdoctorlucky.model.cards.Playable;
-import killdoctorlucky.model.cards.WeaponCard;
 import killdoctorlucky.model.occupants.ComputerPlayer;
 import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Pet;
 import killdoctorlucky.model.occupants.Player;
 import killdoctorlucky.util.RandomGenerator;
-
 
 /**
  * Represents the main game logic and state management for Kill Doctor Lucky.
  * The Game class coordinates all game components including players, the board,
- * Doctor Lucky, and the card deck to provide complete gameplay functionality.
+ * Doctor Lucky, the pet, and the card deck to provide complete gameplay functionality.
  */
 public class Game {
 
@@ -28,11 +27,13 @@ public class Game {
   private final Board board;
   private final Deck deck;
   private final DoctorLucky doctorLucky;
+  
+  private Pet pet;  // Not final - set during game setup
 
   private int currentPlayerIndex = 0;
   private int turnCount = 0;
+  private int maxTurns = 0;
   private GameStatus status = GameStatus.SETUP;
-
 
   /**
    * Creates a game from the given components.
@@ -68,7 +69,7 @@ public class Game {
 
   /**
    * Executes one player's turn. The controller should invoke player actions via Commands.
-   * After the player's actions are processed, Doctor Lucky automatically moves.
+   * After the player's actions are processed, Doctor Lucky and Pet automatically move.
    */
   public void playTurn() {
     if (status != GameStatus.IN_PROGRESS) {
@@ -78,14 +79,24 @@ public class Game {
 
     // Doctor Lucky moves after each player's turn per M2 requirement.
     doctorLucky.moveNext();
+    
+    // Pet wanders to next location (Milestone 3)
+    if (pet != null) {
+      pet.wanderNext();
+    }
 
     // Advance to next player / turn.
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     turnCount++;
+    
+    // Check if max turns reached
+    if (maxTurns > 0 && turnCount >= maxTurns) {
+      status = GameStatus.FINISHED;
+    }
   }
 
   /** 
-   * current player.
+   * Gets the current player.
    * @return the current player (whose turn it is). 
    */
   public Player getCurrentPlayer() {
@@ -96,7 +107,7 @@ public class Game {
   }
 
   /** 
-   * get game status.
+   * Gets game status.
    * @return current game status. 
    */
   public GameStatus getStatus() {
@@ -104,7 +115,7 @@ public class Game {
   }
 
   /** 
-   * get numer of turns elapsed.
+   * Gets number of turns elapsed.
    * @return number of turns elapsed. 
    */
   public int getTurnCount() {
@@ -112,17 +123,25 @@ public class Game {
   }
 
   /** 
-   * get all the players in the join order.
+   * Gets all the players in the join order.
    * @return all players in join order.
    */
   public List<Player> getPlayers() {
     return new ArrayList<>(players);
   }
 
+  /**
+   * Gets the game board.
+   * @return the board
+   */
   public Board getBoard() {
     return board;
   }
 
+  /**
+   * Gets Doctor Lucky.
+   * @return Doctor Lucky
+   */
   public DoctorLucky getDoctorLucky() {
     return doctorLucky;
   }
@@ -207,10 +226,7 @@ public class Game {
 
   /**
    * Produces a textual description for what the given player can observe:
-   *   <li>current room</li>
-   *   <li>adjacent rooms</li>
-   *   <li>items in the current room</li>
-   *   <li>visible players (including Doctor Lucky if visible).
+   * current room, adjacent rooms, items, visible players, Doctor Lucky, and pet.
    *
    * @param player the querying player
    * @return multi-line string description
@@ -225,14 +241,24 @@ public class Game {
     // Where am I?
     sb.append("You are in: ").append(here.getName()).append('\n');
 
-    // Adjacent rooms
+    // Adjacent rooms (considering pet blocking)
     List<Room> neighbors = board.getAdjacentRooms(here);
-    sb.append("Adjacent rooms (").append(neighbors.size()).append("): ");
-    for (int i = 0; i < neighbors.size(); i++) {
+    List<String> visibleNeighbors = new ArrayList<>();
+    for (Room neighbor : neighbors) {
+      // Check if pet blocks this room
+      if (pet != null && pet.getCurrentRoom().equals(neighbor)) {
+        // Pet makes this room invisible
+        continue;
+      }
+      visibleNeighbors.add(neighbor.getName());
+    }
+
+    sb.append("Adjacent rooms (").append(visibleNeighbors.size()).append("): ");
+    for (int i = 0; i < visibleNeighbors.size(); i++) {
       if (i > 0) {
         sb.append(", ");
       }
-      sb.append(neighbors.get(i).getName());
+      sb.append(visibleNeighbors.get(i));
     }
     sb.append('\n');
 
@@ -268,38 +294,251 @@ public class Game {
       }
       sb.append(visible.get(i));
     }
+    sb.append('\n');
+
+    // Show pet location if visible
+    if (pet != null) {
+      if (pet.getCurrentRoom().equals(here)) {
+        sb.append("The pet ").append(pet.getName()).append(" is here with you.\n");
+      }
+    }
 
     return sb.toString();
   }
 
   /**
-   * check if the game is over.
-   *@return true if the game is over. */
+   * Checks if the game is over.
+   * @return true if the game is over. 
+   */
   public boolean isGameOver() {
     return status == GameStatus.FINISHED;
   }
 
+  // ===== MILESTONE 3: PET MANAGEMENT =====
+
   /**
-   * Checks the outcome of a murder attempt by the given player using the specified weapon.
-   * Determines success or failure based on witnesses, failure cards, and game rules.
-   *
-   * @param player the player attempting the murder
-   * @param weapon the weapon card used for the murder attempt
-   * @return the result of the murder attempt, as a {@link MurderResult}
+   * Sets the pet for this game and initializes its wandering path.
+   * This should be called during game setup after all rooms are loaded.
+   * 
+   * @param gamePet the pet to add to the game
+   * @throws IllegalArgumentException if pet is null
    */
-  public MurderResult attemptMurder(Player player, WeaponCard weapon) {
-    return MurderResult.FAILED_WITNESS_PRESENT;
+  public void setPet(Pet gamePet) {
+    if (gamePet == null) {
+      throw new IllegalArgumentException("Pet cannot be null");
+    }
+    this.pet = gamePet;
+    // Initialize the pet's DFS wandering path
+    this.pet.initializeDfsPath(board);
   }
 
   /**
-   * Determines the winner of the game if one exists.
-   *
-   * @return the player who has won the game, or {@code null} if the game is still ongoing
+   * Gets the pet in this game.
+   * 
+   * @return the pet, or null if no pet has been set
+   */
+  public Pet getPet() {
+    return pet;
+  }
+
+  /**
+   * Moves the pet to the specified target room.
+   * This represents a player's turn action.
+   * 
+   * @param targetRoom the room to move the pet to
+   * @throws IllegalArgumentException if targetRoom is null
+   * @throws IllegalStateException if no pet exists in the game
+   */
+  public void movePet(Room targetRoom) {
+    if (targetRoom == null) {
+      throw new IllegalArgumentException("Target room cannot be null");
+    }
+    if (pet == null) {
+      throw new IllegalStateException("No pet in the game");
+    }
+
+    pet.moveToRoom(targetRoom);
+  }
+
+  /**
+   * Sets the maximum number of turns allowed in the game.
+   * 
+   * @param max the maximum turns (must be positive)
+   * @throws IllegalArgumentException if max <= 0
+   */
+  public void setMaxTurns(int max) {
+    if (max <= 0) {
+      throw new IllegalArgumentException("Max turns must be positive");
+    }
+    this.maxTurns = max;
+  }
+
+  /**
+   * Gets the maximum number of turns allowed.
+   * 
+   * @return the maximum turns
+   */
+  public int getMaxTurns() {
+    return maxTurns;
+  }
+
+  // ===== MILESTONE 3: MURDER ATTEMPT LOGIC =====
+
+  /**
+   * Attempts to murder Doctor Lucky using the specified item.
+   * The murder can succeed or fail based on witnesses and game rules.
+   * 
+   * @param player the player attempting the murder
+   * @param itemName the name of the item to use (can be empty for "poke in eye")
+   * @return the result of the murder attempt
+   * @throws IllegalArgumentException if player is null
+   * @throws IllegalStateException if game is not in progress
+   */
+  public MurderResult attemptMurder(Player player, String itemName) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
+    }
+    if (status != GameStatus.IN_PROGRESS) {
+      throw new IllegalStateException("Game is not in progress");
+    }
+
+    // Check if player is in same room as Doctor Lucky
+    if (!player.getCurrentRoom().equals(doctorLucky.getCurrentRoom())) {
+      throw new IllegalArgumentException("Player must be in same room as Doctor Lucky");
+    }
+
+    // Check if other players can see this attempt
+    if (isPlayerVisible(player)) {
+      // Witnessed by another player - attack fails automatically
+      return MurderResult.FAILED_WITNESS_PRESENT;
+    }
+
+    // Determine damage
+    int damage = 0;
+    Item weaponUsed = null;
+
+    if (itemName == null || itemName.trim().isEmpty()) {
+      // Poke in the eye
+      damage = player.getPokeInEyeDamage();
+    } else {
+      // Try to find the item in player's inventory
+      weaponUsed = findItemInInventory(player, itemName.trim());
+      if (weaponUsed == null) {
+        throw new IllegalArgumentException("Player does not have item: " + itemName);
+      }
+      damage = weaponUsed.getDamage();
+    }
+
+    // Apply damage to Doctor Lucky
+    doctorLucky.takeDamage(damage);
+
+    // Remove the weapon from game (becomes evidence)
+    if (weaponUsed != null) {
+      player.dropItem(weaponUsed.getName());
+      // Item is removed from game (evidence)
+    }
+
+    // Check if Doctor Lucky is dead
+    if (!doctorLucky.isAlive()) {
+      status = GameStatus.FINISHED;
+      return MurderResult.SUCCESS;
+    }
+
+    // Doctor Lucky survived
+    return MurderResult.FAILED_INSUFFICIENT_WEAPON;
+  }
+
+  /**
+   * Checks if a player can be seen by any other player during a murder attempt.
+   * Takes into account pet location blocking visibility.
+   * 
+   * @param player the player to check visibility for
+   * @return true if any other player can see this player
+   * @throws IllegalArgumentException if player is null
+   */
+  public boolean isPlayerVisible(Player player) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
+    }
+
+    Room playerRoom = player.getCurrentRoom();
+
+    // Check if pet is in the same room (blocks visibility from neighbors)
+    boolean petInRoom = (pet != null && pet.getCurrentRoom().equals(playerRoom));
+
+    // Check each other player
+    for (Player otherPlayer : players) {
+      if (otherPlayer.equals(player)) {
+        continue; // Skip self
+      }
+
+      Room otherRoom = otherPlayer.getCurrentRoom();
+
+      // Same room - always visible
+      if (otherRoom.equals(playerRoom)) {
+        return true;
+      }
+
+      // Different room - check if they're neighbors
+      if (board.getAdjacentRooms(otherRoom).contains(playerRoom)) {
+        // They're neighbors, but check if pet blocks the view
+        if (!petInRoom) {
+          // No pet blocking - other player can see
+          return true;
+        }
+      }
+    }
+
+    // No one can see the player
+    return false;
+  }
+
+  /**
+   * Gets the winner of the game if there is one.
+   * 
+   * @return the player who won, or null if no winner yet or game not finished
    */
   public Player getWinner() {
-    return null; 
+    if (status != GameStatus.FINISHED) {
+      return null;
+    }
+
+    // Check if Doctor Lucky was killed
+    if (!doctorLucky.isAlive()) {
+      // The last player to make a successful attack is the winner
+      // In our implementation, we track this via the turn system
+      // The player who made the killing blow would be identifiable
+      // For simplicity, return the current player (who just finished their turn)
+      int winnerIndex = (currentPlayerIndex - 1 + players.size()) % players.size();
+      return players.get(winnerIndex);
+    }
+
+    // Max turns reached - no winner
+    return null;
   }
 
+  /**
+   * Ends the game, setting status to FINISHED.
+   */
+  public void endGame() {
+    this.status = GameStatus.FINISHED;
+  }
+
+  /**
+   * Helper method to find an item in player's inventory by name.
+   * 
+   * @param player the player
+   * @param itemName the item name to find
+   * @return the item, or null if not found
+   */
+  private Item findItemInInventory(Player player, String itemName) {
+    for (Item item : player.getInventory()) {
+      if (item.getName().equalsIgnoreCase(itemName)) {
+        return item;
+      }
+    }
+    return null;
+  }
 
   /** Deals the opening hand to each player. */
   private void dealInitialCards() {
@@ -307,7 +546,9 @@ public class Game {
       for (Player p : players) {
         if (!deck.isEmpty() && p.canDrawCard()) {
           Playable c = deck.drawCard();
-          p.addCard(c);
+          if (c != null) {
+            p.addCard(c);
+          }
         }
       }
     }

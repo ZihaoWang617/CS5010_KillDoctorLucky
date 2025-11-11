@@ -262,6 +262,57 @@ public class Player implements Movable, Occupant {
     return null;
   }
 
+  /**
+   * Gets the best weapon item from the player's inventory.
+   * Returns the item with the highest damage value.
+   * 
+   * @return the item with highest damage, or null if inventory is empty
+   */
+  public Item getBestWeaponItem() {
+    if (inventory.isEmpty()) {
+      return null;
+    }
+
+    Item bestWeapon = inventory.get(0);
+    for (Item item : inventory) {
+      if (item.getDamage() > bestWeapon.getDamage()) {
+        bestWeapon = item;
+      }
+    }
+    return bestWeapon;
+  }
+
+  /**
+   * Checks if this player can see another player.
+   * Uses the board's visibility system to determine line of sight.
+   * 
+   * @param other the other player to check visibility for
+   * @param board the game board for visibility calculations
+   * @return true if this player can see the other player
+   * @throws IllegalArgumentException if other or board is null
+   */
+  public boolean canSeeOtherPlayer(Player other, Board board) {
+    if (other == null) {
+      throw new IllegalArgumentException("Other player cannot be null");
+    }
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null");
+    }
+
+    // Use the existing canBeSeenBy logic
+    return other.canBeSeenBy(this, board);
+  }
+
+  /**
+   * Gets the damage value for a "poke in the eye" attack.
+   * This is used when a player has no items but attempts murder.
+   * 
+   * @return always returns 1 (poke damage)
+   */
+  public int getPokeInEyeDamage() {
+    return 1;
+  }
+  
   @Override
   public String toString() {
     return String.format(

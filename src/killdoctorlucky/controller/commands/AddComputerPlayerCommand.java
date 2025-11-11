@@ -1,9 +1,9 @@
 package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
-import java.util.random.RandomGenerator;
 import killdoctorlucky.model.Game;
 import killdoctorlucky.model.Room;
+import killdoctorlucky.util.RandomGenerator;
 
 /**
  * Command to add a computer-controlled player during setup.
@@ -15,7 +15,7 @@ public class AddComputerPlayerCommand implements Command {
   private final RandomGenerator rng;
 
   /**
-   * command to add compouter player into game.
+   * Command to add computer player into game.
    * @param playerName the computer player's name (non-null, non-blank)
    * @param startRoomName the starting room (non-null, must exist)
    * @param randomGenerator random generator used by the computer player (non-null)

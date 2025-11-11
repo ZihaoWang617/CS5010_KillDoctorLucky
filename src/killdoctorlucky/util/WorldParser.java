@@ -66,8 +66,15 @@ public class WorldParser {
         throw new IllegalArgumentException("Invalid target format");
       }
 
-      Integer.parseInt(targetParts[0]); // targetHealth
-      // String targetName = targetParts[1]; // will be used later
+      int targetHealth = Integer.parseInt(targetParts[0]);
+      String targetName = targetParts[1];
+      
+      // Step 2.5: Parse pet (NEW for Milestone 3)
+      String petLine = reader.readLine();
+      String petName = null;
+      if (petLine != null && !petLine.trim().isEmpty()) {
+        petName = petLine.trim();
+      }
 
       // Step 3: rooms count
       String roomCountLine = reader.readLine();
@@ -197,7 +204,7 @@ public class WorldParser {
         reader.reset();
       }
 
-      return new WorldData(board, rooms);
+      return new WorldData(board, rooms, targetHealth, petName);
 
     } finally {
       reader.close();
@@ -211,16 +218,22 @@ public class WorldParser {
   public static class WorldData {
     public final Board board;
     public final List<Room> roomsInOrder;
+    public final int targetHealth;
+    public final String petName;
 
     /**
      * Creates a new WorldData container.
      *
-     * @param gameBoard   the game board with all rooms and connections
+     * @param gameBoard the game board with all rooms and connections
      * @param orderedRooms the ordered list of rooms as they appear in the file
+     * @param health Doctor Lucky's initial health
+     * @param pet the pet's name (can be null if no pet)
      */
-    public WorldData(Board gameBoard, List<Room> orderedRooms) {
+    public WorldData(Board gameBoard, List<Room> orderedRooms, int health, String pet) {
       this.board = gameBoard;
       this.roomsInOrder = orderedRooms;
+      this.targetHealth = health;
+      this.petName = pet;
     }
   }
 

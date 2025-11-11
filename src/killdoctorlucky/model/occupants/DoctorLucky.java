@@ -15,26 +15,45 @@ public class DoctorLucky implements Movable, Occupant {
   private Room currentRoom;
   private List<Room> movementSequence;
   private int sequenceIndex;
+  private int health;           // NEW for Milestone 3
+  private final int maxHealth;  // NEW for Milestone 3
 
   /**
-   * Creates Doctor Lucky in the specified starting room with a movement sequence.
+   * Creates Doctor Lucky in the specified starting room with initial health.
    * Doctor Lucky will move through the provided sequence of rooms automatically.
    * 
    * @param startingRoom the room where Doctor Lucky begins
-   * @throws IllegalArgumentException if startingRoom is null
+   * @param initialHealth the starting health points
+   * @throws IllegalArgumentException if startingRoom is null or health <= 0
    */
-  public DoctorLucky(Room startingRoom) {
+  public DoctorLucky(Room startingRoom, int initialHealth) {
     if (startingRoom == null) {
       throw new IllegalArgumentException("Starting room cannot be null");
+    }
+    if (initialHealth <= 0) {
+      throw new IllegalArgumentException("Initial health must be positive");
     }
 
     this.currentRoom = startingRoom;
     this.movementSequence = new ArrayList<>();
     this.movementSequence.add(startingRoom);
     this.sequenceIndex = 0;
+    this.health = initialHealth;
+    this.maxHealth = initialHealth;
 
     // Add Doctor Lucky to the starting room
     startingRoom.addOccupant(this);
+  }
+
+  /**
+   * Creates Doctor Lucky with default health of 50.
+   * This maintains backward compatibility with existing code.
+   * 
+   * @param startingRoom the room where Doctor Lucky begins
+   * @throws IllegalArgumentException if startingRoom is null
+   */
+  public DoctorLucky(Room startingRoom) {
+    this(startingRoom, 50); // Default health
   }
 
   /**
@@ -167,10 +186,80 @@ public class DoctorLucky implements Movable, Occupant {
     return board.calculateVisibility(other, this);
   }
 
+  // ===== NEW METHODS FOR MILESTONE 3 =====
+
+  /**
+   * Reduces Doctor Lucky's health by the specified damage amount.
+   * Health cannot go below zero.
+   * 
+   * @param damage the amount of damage to inflict
+   * @throws IllegalArgumentException if damage is negative
+   */
+  public void takeDamage(int damage) {
+    if (damage < 0) {
+      throw new IllegalArgumentException("Damage cannot be negative");
+    }
+    this.health = Math.max(0, this.health - damage);
+  }
+
+  /**
+   * Gets Doctor Lucky's current health points.
+   * 
+   * @return the current health, always non-negative
+   */
+  public int getHealth() {
+    return health;
+  }
+
+  /**
+   * Gets Doctor Lucky's maximum health points.
+   * 
+   * @return the maximum health
+   */
+  public int getMaxHealth() {
+    return maxHealth;
+  }
+
+  /**
+   * Checks if Doctor Lucky is still alive.
+   * 
+   * @return true if health > 0, false otherwise
+   */
+  public boolean isAlive() {
+    return health > 0;
+  }
+
+  /**
+   * Checks if Doctor Lucky is alone with a player considering the board's
+   * visibility rules and pet location.
+   * 
+   * @param player the player attempting the murder
+   * @param board the game board for visibility checks
+   * @return true if alone with the player (no other players can see)
+   * @throws IllegalArgumentException if player or board is null
+   */
+  public boolean isAloneWithPlayer(Player player, Board board) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
+    }
+    if (board == null) {
+      throw new IllegalArgumentException("Board cannot be null");
+    }
+
+    // Must be in the same room
+    if (!currentRoom.equals(player.getCurrentRoom())) {
+      return false;
+    }
+
+    // This will be checked more thoroughly in Game.attemptMurder()
+    // considering other players' visibility
+    return true;
+  }
+
   @Override
   public String toString() {
-    return String.format("DoctorLucky{room='%s', sequenceIndex=%d}", currentRoom.getName(),
-        sequenceIndex);
+    return String.format("DoctorLucky{room='%s', health=%d/%d, sequenceIndex=%d}", 
+        currentRoom.getName(), health, maxHealth, sequenceIndex);
   }
 
   @Override

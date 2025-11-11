@@ -1,5 +1,6 @@
 30 25 My Awesome Mansion
 50 Doctor Lucky
+Fortune the Cat
 20
 0 0 4 4 Grand Entrance
 5 0 9 4 Library
@@ -68,4 +69,3 @@ Servant Quarters : Wine Cellar, Trophy Room, Conservatory
 Trophy Room : Art Gallery, Storage Attic, Servant Quarters
 Storage Attic : Dressing Room, Trophy Room
 END
-

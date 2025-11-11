@@ -5,11 +5,13 @@ import java.util.Locale;
 import java.util.Scanner;
 import killdoctorlucky.controller.commands.AddComputerPlayerCommand;
 import killdoctorlucky.controller.commands.AddHumanPlayerCommand;
+import killdoctorlucky.controller.commands.AttemptMurderCommand;
 import killdoctorlucky.controller.commands.CreateMapCommand;
 import killdoctorlucky.controller.commands.DisplayPlayerCommand;
 import killdoctorlucky.controller.commands.DisplaySpaceCommand;
 import killdoctorlucky.controller.commands.LookAroundCommand;
 import killdoctorlucky.controller.commands.MoveCommand;
+import killdoctorlucky.controller.commands.MovePetCommand;
 import killdoctorlucky.controller.commands.PickUpItemCommand;
 import killdoctorlucky.model.Game;
 import killdoctorlucky.model.GameStatus;
@@ -21,7 +23,6 @@ import killdoctorlucky.util.RandomGenerator;
 /**
  * Text-based controller: reads commands from a {@link Readable}, writes to an
  * {@link Appendable}, and executes commands against the {@link Game} model.
- *
  */
 public class TextController {
 
@@ -72,6 +73,12 @@ public class TextController {
         println("Turn " + (turns + 1) + " of " + maxTurns);
         println("Current player: " + game.getCurrentPlayer().getName());
         println("Doctor Lucky is in: " + game.getDoctorLucky().getCurrentRoom().getName());
+        
+        // Show pet location if pet exists
+        if (game.getPet() != null) {
+          println("Pet '" + game.getPet().getName() + "' is in: " 
+              + game.getPet().getCurrentRoom().getName());
+        }
         
         // If current player is computer, automatically execute its turn
         Player currentPlayer = game.getCurrentPlayer();
@@ -184,6 +191,21 @@ public class TextController {
           }
           new PickUpItemCommand(itemName).execute(game, output);
           
+        } else if ("movepet".equals(token)) {
+          if (!ensureGameInProgress()) {
+            continue;
+          }
+          String roomName = requireNext(sc, "target room");
+          new MovePetCommand(roomName).execute(game, output);
+          
+        } else if ("attack".equals(token)) {
+          if (!ensureGameInProgress()) {
+            continue;
+          }
+          // Read the rest of the line as the item name (may be empty for poke)
+          String weaponName = sc.hasNextLine() ? sc.nextLine().trim() : "";
+          new AttemptMurderCommand(weaponName.isEmpty() ? null : weaponName).execute(game, output);
+          
         } else if ("endturn".equals(token)) {
           if (!ensureGameInProgress()) {
             continue;
@@ -260,6 +282,8 @@ public class TextController {
           if (gameStarted) {
             println("Turn: " + (turns + 1) + " / " + maxTurns);
             println("Current Player: " + game.getCurrentPlayer().getName());
+            println("Doctor Lucky health: " + game.getDoctorLucky().getHealth() 
+                + "/" + game.getDoctorLucky().getMaxHealth());
           }
           
         // General commands
@@ -310,6 +334,9 @@ public class TextController {
     sb.append("  look                        - Look around current room\n");
     sb.append("  move <roomName>             - Move to an adjacent room\n");
     sb.append("  pickup <itemName>           - Pick up an item from current room\n");
+    sb.append("  movepet <roomName>          - Move the pet to a specified room\n");
+    sb.append("  attack [itemName]           - Attempt to murder Doctor Lucky\n");
+    sb.append("                                (leave itemName empty to poke in eye)\n");
     sb.append("  endturn                     - End your turn\n");
     sb.append("\nINFORMATION:\n");
     sb.append("  info <spaceName>            - Display information about a space\n");

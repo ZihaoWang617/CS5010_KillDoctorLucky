@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import killdoctorlucky.model.Deck;
 import killdoctorlucky.model.Game;
 import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Pet;
 import killdoctorlucky.util.WorldParser;
 
 /**
@@ -23,8 +24,9 @@ public class GameDriver {
   public static void main(String[] args) {
     // Check for correct number of arguments
     if (args.length < 2) {
-      System.err.println("Usage: java killdoctorlucky.GameDriver <world-file> <max-turns>");
-      System.err.println("Example: java killdoctorlucky.GameDriver mansion.txt 20");
+      System.err.println(
+          "Usage: java killdoctorlucky.controller.GameDriver <world-file> <max-turns>");
+      System.err.println("Example: java killdoctorlucky.controller.GameDriver mansion.txt 20");
       System.exit(1);
     }
 
@@ -57,13 +59,34 @@ public class GameDriver {
       System.out.println("✓ World loaded successfully!");
       System.out.println("✓ Total rooms: " + worldData.board.getRoomCount());
       System.out.println("✓ Maximum turns: " + maxTurns);
+      
+      // Create Doctor Lucky (with initial health from world file if available, else default)
+      // For Milestone 3, we assume the world file specifies health as the first number
+      // on the Doctor Lucky line. If not present, default to 50.
+      DoctorLucky doctor = new DoctorLucky(worldData.roomsInOrder.get(0), worldData.targetHealth);
+      doctor.setMovementSequence(worldData.roomsInOrder);
+      
+      // Create Pet (new for Milestone 3)
+      // The pet info is on line 3 of the world file
+      Pet pet = null;
+      if (worldData.petName != null && !worldData.petName.isEmpty()) {
+        pet = new Pet(worldData.petName, worldData.roomsInOrder.get(0));
+        System.out.println("✓ Pet: " + worldData.petName);
+      }
+      
       System.out.println();
 
       // Create game components
-      DoctorLucky doctor = new DoctorLucky(worldData.roomsInOrder.get(0));
-      doctor.setMovementSequence(worldData.roomsInOrder);
       Deck deck = new Deck();
       Game game = new Game(worldData.board, deck, doctor);
+      
+      // Set pet if it exists
+      if (pet != null) {
+        game.setPet(pet);
+      }
+      
+      // Set max turns
+      game.setMaxTurns(maxTurns);
 
       // Create controller with System.in and System.out
       Readable input = new InputStreamReader(System.in);

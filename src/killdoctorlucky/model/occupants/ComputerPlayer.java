@@ -1,10 +1,10 @@
 package killdoctorlucky.model.occupants;
 
 import java.util.List;
-import java.util.random.RandomGenerator;
 import killdoctorlucky.model.Game;
 import killdoctorlucky.model.Item;
 import killdoctorlucky.model.Room;
+import killdoctorlucky.util.RandomGenerator;
 
 /**
  * A computer-controlled player that automatically chooses an action on its turn.
