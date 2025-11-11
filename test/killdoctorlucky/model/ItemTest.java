@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import org.junit.Assert;
 import org.junit.Before;

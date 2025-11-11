@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,8 +8,11 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.List;
+import killdoctorlucky.model.occupants.Player;
 import org.junit.Before;
 import org.junit.Test;
+
+
 
 /**
  * Test class for Board functionality. Tests board initialization, room

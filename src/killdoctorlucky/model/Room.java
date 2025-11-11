@@ -21,6 +21,18 @@ public class Room {
   private int rowIndex = 0;
   private int width = 4;
   private int height = 3;
+  
+  /**
+   * Constructs a named room with the given name.
+   * This is a convenience constructor for testing.
+   *
+   * @param roomName the room name
+   * @throws IllegalArgumentException if name is null or empty
+   */
+  public Room(String roomName) {
+    this(roomName, true); // 默认是 named room
+  }
+
 
   /**
    * Constructs a room with the given name.
@@ -254,5 +266,22 @@ public class Room {
   @Override
   public String toString() {
     return "Room{" + name + ", occupants=" + occupants.size() + ", items=" + items.size() + "}";
+  }
+  
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (obj == null || getClass() != obj.getClass()) {
+      return false;
+    }
+    Room other = (Room) obj;
+    return name.equals(other.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
   }
 }

@@ -28,12 +28,12 @@ public class Game {
   private final Deck deck;
   private final DoctorLucky doctorLucky;
   
-  private Pet pet;  // Not final - set during game setup
-
+  private Pet pet;
   private int currentPlayerIndex = 0;
   private int turnCount = 0;
   private int maxTurns = 0;
   private GameStatus status = GameStatus.SETUP;
+  private Player winner = null;
 
   /**
    * Creates a game from the given components.
@@ -59,6 +59,9 @@ public class Game {
    * Call this after all players have been added.
    */
   public void startGame() {
+    if (status != GameStatus.SETUP) {
+      throw new IllegalStateException("Game has already been started");
+    }
     if (players.size() < MIN_PLAYERS || players.size() > MAX_PLAYERS) {
       throw new IllegalStateException(
           "Player count must be between " + MIN_PLAYERS + " and " + MAX_PLAYERS);
@@ -441,6 +444,7 @@ public class Game {
     // Check if Doctor Lucky is dead
     if (!doctorLucky.isAlive()) {
       status = GameStatus.FINISHED;
+      winner = player;
       return MurderResult.SUCCESS;
     }
 
@@ -502,19 +506,7 @@ public class Game {
     if (status != GameStatus.FINISHED) {
       return null;
     }
-
-    // Check if Doctor Lucky was killed
-    if (!doctorLucky.isAlive()) {
-      // The last player to make a successful attack is the winner
-      // In our implementation, we track this via the turn system
-      // The player who made the killing blow would be identifiable
-      // For simplicity, return the current player (who just finished their turn)
-      int winnerIndex = (currentPlayerIndex - 1 + players.size()) % players.size();
-      return players.get(winnerIndex);
-    }
-
-    // Max turns reached - no winner
-    return null;
+    return winner;
   }
 
   /**

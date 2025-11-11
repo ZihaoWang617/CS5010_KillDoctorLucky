@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.model;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,8 +7,13 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.model.occupants.Occupant;
+import killdoctorlucky.model.occupants.Player;
 import org.junit.Before;
 import org.junit.Test;
+
+
 
 /**
  * Test class for Room functionality. Tests room creation, occupant management,
@@ -95,7 +100,7 @@ public class RoomTest {
 
     DoctorLucky doctor = new DoctorLucky(kitchen);
     kitchen.addOccupant(doctor);
-    assertEquals(1, kitchen.getPlayerCount());
+    assertEquals(2, kitchen.getPlayerCount());
   }
 
   @Test

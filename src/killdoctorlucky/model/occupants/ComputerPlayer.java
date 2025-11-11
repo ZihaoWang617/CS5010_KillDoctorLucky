@@ -35,6 +35,9 @@ public class ComputerPlayer extends Player {
    * @param game the current game instance controlling the world
    */
   public void takeTurn(Game game) {
+    if (game == null) {
+      throw new IllegalArgumentException("Game cannot be null.");
+    }
     int choice = rng.nextInt(3); // 0=move, 1=pickup, 2=look
     switch (choice) {
       case 0:

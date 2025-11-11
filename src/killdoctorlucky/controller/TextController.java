@@ -89,28 +89,8 @@ public class TextController {
           game.playTurn();
           turns++;
           
-          // Check if max turns reached
-          if (turns >= maxTurns) {
-            println("");
-            println("========================================");
-            println("Maximum number of turns reached: " + maxTurns);
-            println("Game Over!");
-            println("========================================");
-            running = false;
-            break;
-          } else if (game.isGameOver()) {
-            Player winner = game.getWinner();
-            if (winner != null) {
-              println("");
-              println("========================================");
-              println("Congratulations! " + winner.getName() + " has won the game!");
-              println("========================================");
-            } else {
-              println("");
-              println("========================================");
-              println("Game Over! No winner.");
-              println("========================================");
-            }
+          // Check if game ended
+          if (checkGameEnd(turns)) {
             running = false;
             break;
           }
@@ -135,7 +115,11 @@ public class TextController {
             continue;
           }
           String name = requireNext(sc, "player name");
-          String room = requireNext(sc, "start room");
+          String room = sc.nextLine().trim(); 
+          if (room.isEmpty()) {
+            println("Please specify a room name.");
+            continue;
+          }
           new AddHumanPlayerCommand(name, room).execute(game, output);
 
         } else if ("add-computer".equals(token)) {
@@ -144,7 +128,11 @@ public class TextController {
             continue;
           }
           String name = requireNext(sc, "player name");
-          String room = requireNext(sc, "start room");
+          String room = sc.nextLine().trim();
+          if (room.isEmpty()) {
+            println("Please specify a room name.");
+            continue;
+          }
           RandomGenerator gen = new RandomGenerator(1, 0, 2, 1, 0, 2, 0, 1, 2);
           new AddComputerPlayerCommand(name, room, gen).execute(game, output);
 
@@ -162,19 +150,41 @@ public class TextController {
           println("Game started with " + game.getPlayers().size() + " players.");
           println("Maximum turns: " + maxTurns);
           
-        // Play commands  
+        // Play commands - MAIN ACTIONS (auto end turn)
         } else if ("look".equals(token)) {
           if (!ensureGameInProgress()) {
             continue;
           }
           new LookAroundCommand().execute(game, output);
           
+          // Auto end turn after action
+          game.playTurn();
+          turns++;
+          
+          if (checkGameEnd(turns)) {
+            running = false;
+            break;
+          }
+          
         } else if ("move".equals(token)) {
           if (!ensureGameInProgress()) {
             continue;
           }
-          String room = requireNext(sc, "target room");
+          String room = sc.nextLine().trim();
+          if (room.isEmpty()) {
+            println("Please specify a room name.");
+            continue;
+          }
           new MoveCommand(room).execute(game, output);
+          
+          // Auto end turn after action
+          game.playTurn();
+          turns++;
+          
+          if (checkGameEnd(turns)) {
+            running = false;
+            break;
+          }
           
         } else if ("pickup".equals(token)) {
           if (!ensureGameInProgress()) {
@@ -191,12 +201,34 @@ public class TextController {
           }
           new PickUpItemCommand(itemName).execute(game, output);
           
+          // Auto end turn after action
+          game.playTurn();
+          turns++;
+          
+          if (checkGameEnd(turns)) {
+            running = false;
+            break;
+          }
+          
         } else if ("movepet".equals(token)) {
           if (!ensureGameInProgress()) {
             continue;
           }
-          String roomName = requireNext(sc, "target room");
+          String roomName = sc.nextLine().trim();
+          if (roomName.isEmpty()) {
+            println("Please specify a room name.");
+            continue;
+          }
           new MovePetCommand(roomName).execute(game, output);
+          
+          // Auto end turn after action
+          game.playTurn();
+          turns++;
+          
+          if (checkGameEnd(turns)) {
+            running = false;
+            break;
+          }
           
         } else if ("attack".equals(token)) {
           if (!ensureGameInProgress()) {
@@ -206,40 +238,38 @@ public class TextController {
           String weaponName = sc.hasNextLine() ? sc.nextLine().trim() : "";
           new AttemptMurderCommand(weaponName.isEmpty() ? null : weaponName).execute(game, output);
           
+          // If murder succeeds, game ends automatically in the command
+          // Otherwise, end turn
+          if (!game.isGameOver()) {
+            game.playTurn();
+            turns++;
+            
+            if (checkGameEnd(turns)) {
+              running = false;
+              break;
+            }
+          } else {
+            // Game ended due to successful murder
+            running = false;
+            break;
+          }
+          
         } else if ("endturn".equals(token)) {
+          // Keep this as a "skip turn" option for human players
           if (!ensureGameInProgress()) {
             continue;
           }
           
+          println("Skipping turn...");
           game.playTurn();
           turns++;
           
-          if (turns >= maxTurns) {
-            println("");
-            println("========================================");
-            println("Maximum number of turns reached: " + maxTurns);
-            println("Game Over!");
-            println("========================================");
-            running = false;
-            break;
-          } else if (game.isGameOver()) {
-            Player winner = game.getWinner();
-            if (winner != null) {
-              println("");
-              println("========================================");
-              println("Congratulations! " + winner.getName() + " has won the game!");
-              println("========================================");
-            } else {
-              println("");
-              println("========================================");
-              println("Game Over! No winner.");
-              println("========================================");
-            }
+          if (checkGameEnd(turns)) {
             running = false;
             break;
           }
           
-        // Information commands
+        // Information commands - DO NOT end turn
         } else if ("info".equals(token)) {
           String spaceName = sc.nextLine().trim();
           if (spaceName.isEmpty()) {
@@ -304,6 +334,38 @@ public class TextController {
     }
   }
   
+  /**
+   * Checks if the game has ended and displays appropriate messages.
+   * @param currentTurns current turn count
+   * @return true if game should end
+   */
+  private boolean checkGameEnd(int currentTurns) {
+    if (currentTurns >= maxTurns) {
+      println("");
+      println("========================================");
+      println("Maximum number of turns reached: " + maxTurns);
+      println("Doctor Lucky has escaped!");
+      println("Game Over!");
+      println("========================================");
+      return true;
+    } else if (game.isGameOver()) {
+      Player winner = game.getWinner();
+      if (winner != null) {
+        println("");
+        println("========================================");
+        println("Congratulations! " + winner.getName() + " has won the game!");
+        println("========================================");
+      } else {
+        println("");
+        println("========================================");
+        println("Game Over! No winner.");
+        println("========================================");
+      }
+      return true;
+    }
+    return false;
+  }
+  
   private String requireNext(Scanner sc, String what) {
     if (!sc.hasNext()) {
       throw new IllegalStateException("Missing " + what);
@@ -330,15 +392,15 @@ public class TextController {
     sb.append("  add-human <name> <room>     - Add a human player\n");
     sb.append("  add-computer <name> <room>  - Add a computer player\n");
     sb.append("  start                       - Start the game\n");
-    sb.append("\nGAME PLAY:\n");
+    sb.append("\nMAIN ACTIONS (ends turn automatically):\n");
     sb.append("  look                        - Look around current room\n");
     sb.append("  move <roomName>             - Move to an adjacent room\n");
     sb.append("  pickup <itemName>           - Pick up an item from current room\n");
     sb.append("  movepet <roomName>          - Move the pet to a specified room\n");
     sb.append("  attack [itemName]           - Attempt to murder Doctor Lucky\n");
     sb.append("                                (leave itemName empty to poke in eye)\n");
-    sb.append("  endturn                     - End your turn\n");
-    sb.append("\nINFORMATION:\n");
+    sb.append("  endturn                     - Skip turn (do nothing)\n");
+    sb.append("\nINFORMATION (does not end turn):\n");
     sb.append("  info <spaceName>            - Display information about a space\n");
     sb.append("  player <playerName>         - Display information about a player\n");
     sb.append("  map <filename>              - Generate world map as PNG\n");

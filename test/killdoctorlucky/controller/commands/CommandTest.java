@@ -1,11 +1,17 @@
-package killdoctorlucky;
+package killdoctorlucky.controller.commands;
 
 import java.io.IOException;
 import java.io.StringReader;
+import killdoctorlucky.model.Deck;
+import killdoctorlucky.model.Game;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.occupants.ComputerPlayer;
+import killdoctorlucky.model.occupants.DoctorLucky;
+import killdoctorlucky.util.RandomGenerator;
+import killdoctorlucky.util.WorldParser;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 
 /**
  * Test class for Command implementations.
@@ -15,6 +21,7 @@ public class CommandTest {
   private Game game;
   private StringBuilder output;
   private Room kitchen;
+  private Room library;
   
   /**
    * Sets up the test fixture before each test.
@@ -26,6 +33,7 @@ public class CommandTest {
   public void setUp() throws IOException {
     String worldSpec = "36 30 Mansion\n"
         + "50 Doctor Lucky\n"
+        + "Fortune the Cat\n"
         + "2\n"
         + "0 0 5 5 Kitchen\n"
         + "6 0 10 5 Library\n"
@@ -40,6 +48,7 @@ public class CommandTest {
     output = new StringBuilder();
     
     kitchen = game.getBoard().getRoom("Kitchen");
+    library = game.getBoard().getRoom("Library");
   }
   
   /**
@@ -101,6 +110,8 @@ public class CommandTest {
   @Test
   public void testMoveCommand() {
     game.addHumanPlayer("Alice", kitchen);
+    game.addHumanPlayer("Bob", kitchen);
+    game.addHumanPlayer("Jason", library);
     game.startGame();
     
     Command move = new MoveCommand("Library");
@@ -116,6 +127,8 @@ public class CommandTest {
   @Test
   public void testMoveCommandInvalidRoom() {
     game.addHumanPlayer("Alice", kitchen);
+    game.addHumanPlayer("Bob", kitchen);
+    game.addHumanPlayer("Jason", library);
     game.startGame();
     
     Command move = new MoveCommand("InvalidRoom");
@@ -130,6 +143,8 @@ public class CommandTest {
   @Test
   public void testPickUpItemCommand() {
     game.addHumanPlayer("Alice", kitchen);
+    game.addHumanPlayer("Bob", kitchen);
+    game.addHumanPlayer("Jason", library);
     game.startGame();
     
     Command pickup = new PickUpItemCommand("Knife");
@@ -145,6 +160,8 @@ public class CommandTest {
   @Test
   public void testLookAroundCommand() {
     game.addHumanPlayer("Alice", kitchen);
+    game.addHumanPlayer("Bob", kitchen);
+    game.addHumanPlayer("Jason", library);
     game.startGame();
     
     Command look = new LookAroundCommand();

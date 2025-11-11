@@ -1,4 +1,4 @@
-package killdoctorlucky;
+package killdoctorlucky.util;
 
 import org.junit.Assert;
 import org.junit.Test;

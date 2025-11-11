@@ -65,9 +65,7 @@ public class WorldParser {
       if (targetParts.length < 2) {
         throw new IllegalArgumentException("Invalid target format");
       }
-
-      int targetHealth = Integer.parseInt(targetParts[0]);
-      String targetName = targetParts[1];
+      final int targetHealth = Integer.parseInt(targetParts[0]);
       
       // Step 2.5: Parse pet (NEW for Milestone 3)
       String petLine = reader.readLine();
@@ -156,18 +154,13 @@ public class WorldParser {
 
       // Step 9: place items
       for (ItemData itemData : itemDataList) {
-        Item item = new Item(itemData.name, itemData.damage);
-        if (itemData.roomIndex >= 0 && itemData.roomIndex < rooms.size()) {
-          rooms.get(itemData.roomIndex).addItem(item);
+        if (itemData.roomIndex < 0 || itemData.roomIndex >= rooms.size()) {
+          throw new IllegalArgumentException(
+              "Invalid room index " + itemData.roomIndex + " for item " + itemData.name);
         }
+        Item item = new Item(itemData.name, itemData.damage);
+        rooms.get(itemData.roomIndex).addItem(item);
       }
-
-      // Step 10 (optional): parse sight lines block
-      // Format:
-      // SIGHT
-      // From : To1, To2, ...
-      // ...
-      // END
       reader.mark(4096);
       String maybeSight = reader.readLine();
       if (maybeSight != null && maybeSight.trim().equalsIgnoreCase("SIGHT")) {

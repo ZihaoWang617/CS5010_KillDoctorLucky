@@ -1,14 +1,23 @@
-package killdoctorlucky;
+package killdoctorlucky.model.occupants;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.util.List;
+import killdoctorlucky.model.Board;
+import killdoctorlucky.model.Item;
+import killdoctorlucky.model.Room;
+import killdoctorlucky.model.cards.MoveCard;
+import killdoctorlucky.model.cards.Playable;
+import killdoctorlucky.model.cards.WeaponCard;
 import org.junit.Before;
 import org.junit.Test;
+
 
 /**
  * Test class for Player functionality. Tests player creation, movement, card
@@ -334,5 +343,192 @@ public class PlayerTest {
   public void testDropNonExistentItem() {
     Item dropped = alice.dropItem("NonExistent");
     assertEquals(null, dropped);
+  }
+  
+  @Test
+  public void testGetBestWeaponItem() {
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    Item testKnife = new Item("Knife", 5);
+    Item rope = new Item("Rope", 3);
+    Item gun = new Item("Gun", 8);
+    
+    testPlayer.pickUpItem(testKnife);
+    testPlayer.pickUpItem(rope);
+    testPlayer.pickUpItem(gun);
+    
+    Item best = testPlayer.getBestWeaponItem();
+    assertNotNull("Best weapon should not be null", best);
+    assertEquals("Gun", best.getName());
+    assertEquals(8, best.getDamage());
+  }
+  
+  @Test
+  public void testGetBestWeaponItemEmpty() {
+    Room room = new Room("Kitchen");
+    Player player = new Player("Alice", room);
+    
+    assertNull("Best weapon should be null when inventory is empty", 
+        player.getBestWeaponItem());
+  }
+  
+  @Test
+  public void testGetBestWeaponItemSingleItem() {
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    Item testKnife = new Item("Knife", 5);
+    testPlayer.pickUpItem(testKnife);
+    
+    Item best = testPlayer.getBestWeaponItem();
+    assertEquals("Should return the only weapon", testKnife, best);
+  }
+  
+  @Test
+  public void testGetBestWeaponItemMultipleSameDamage() {
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    Item testKnife = new Item("Knife", 5);
+    Item sword = new Item("Sword", 5);
+    
+    testPlayer.pickUpItem(testKnife);
+    testPlayer.pickUpItem(sword);
+    
+    Item best = testPlayer.getBestWeaponItem();
+    assertNotNull(best);
+    assertEquals(5, best.getDamage());
+    // Should return one of them (either is acceptable)
+  }
+  
+  @Test
+  public void testGetPokeInEyeDamage() {
+    Room room = new Room("Kitchen");
+    Player player = new Player("Alice", room);
+    
+    assertEquals("Poke in eye should always do 1 damage", 
+        1, player.getPokeInEyeDamage());
+  }
+  
+  @Test
+  public void testGetPokeInEyeDamageConstant() {
+    Room room = new Room("Kitchen");
+    Player player1 = new Player("Alice", room);
+    Player player2 = new Player("Bob", room);
+    
+    // All players should have same poke damage
+    assertEquals(player1.getPokeInEyeDamage(), player2.getPokeInEyeDamage());
+    assertEquals(1, player1.getPokeInEyeDamage());
+  }
+  
+  @Test
+  public void testCanSeeOtherPlayerSameRoom() {
+    Board testBoard = new Board();
+    
+    Room testRoom1 = new Room("Kitchen");
+    testRoom1.setGeometry(0, 0, 5, 5);
+    
+    testBoard.addRoom(testRoom1);
+    
+    Player alice1 = new Player("Alice", testRoom1);
+    Player bob1 = new Player("Bob", testRoom1);
+    
+    assertTrue("Players in same room should see each other", 
+        alice1.canSeeOtherPlayer(bob1, testBoard));
+  }
+  
+  @Test
+  public void testCanSeeOtherPlayerAdjacentRoom() {
+    Board testBoard = new Board();
+    
+    Room testRoom1 = new Room("Kitchen");
+    testRoom1.setGeometry(0, 0, 5, 5);
+    Room testRoom2 = new Room("Dining");
+    testRoom2.setGeometry(6, 0, 10, 5);
+    
+    testBoard.addRoom(testRoom1);
+    testBoard.addRoom(testRoom2);
+    testBoard.connectRooms(testRoom1, testRoom2);
+    
+    Player alice1 = new Player("Alice", testRoom1);
+    Player bob1 = new Player("Bob", testRoom2);
+    
+    assertTrue("Players in adjacent rooms should see each other", 
+        alice1.canSeeOtherPlayer(bob1, testBoard));
+  }
+  
+  @Test
+  public void testCanSeeOtherPlayerNonAdjacentRoom() {
+    Board testBoard = new Board();
+    
+    Room testRoom1 = new Room("Kitchen");
+    testRoom1.setGeometry(0, 0, 5, 5);
+    Room testRoom2 = new Room("Library");
+    testRoom2.setGeometry(11, 0, 15, 5);
+    
+    testBoard.addRoom(testRoom1);
+    testBoard.addRoom(testRoom2);
+    // Not connected
+    
+    Player alice1 = new Player("Alice", testRoom1);
+    Player bob1 = new Player("Bob", testRoom2);
+    
+    assertFalse("Players in non-adjacent rooms should not see each other", 
+        alice1.canSeeOtherPlayer(bob1, testBoard));
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testCanSeeOtherPlayerNullPlayer() {
+    Board testBoard = new Board();
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    testPlayer.canSeeOtherPlayer(null, testBoard);
+  }
+  
+  @Test(expected = IllegalArgumentException.class)
+  public void testCanSeeOtherPlayerNullBoard() {
+    Room testRoom = new Room("Kitchen");
+    Player alice1 = new Player("Alice", testRoom);
+    Player bob1 = new Player("Bob", testRoom);
+    
+    alice1.canSeeOtherPlayer(bob1, null);
+  }
+  
+  @Test
+  public void testBestWeaponAfterDroppingItem() {
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    Item testKnife = new Item("Knife", 5);
+    Item testGun = new Item("Gun", 8);
+    
+    testPlayer.pickUpItem(testKnife);
+    testPlayer.pickUpItem(testGun);
+    
+    assertEquals("Gun", testPlayer.getBestWeaponItem().getName());
+    
+    // Drop the gun
+    testPlayer.dropItem("Gun");
+    
+    // Now knife should be the best weapon
+    assertEquals("Knife", testPlayer.getBestWeaponItem().getName());
+  }
+  
+  @Test
+  public void testBestWeaponWithZeroDamageItems() {
+    Room testRoom = new Room("Kitchen");
+    Player testPlayer = new Player("Alice", testRoom);
+    
+    Item feather = new Item("Feather", 0);
+    Item testKnife = new Item("Knife", 5);
+    
+    testPlayer.pickUpItem(feather);
+    testPlayer.pickUpItem(testKnife);
+    
+    Item best = testPlayer.getBestWeaponItem();
+    assertEquals("Knife", best.getName());
+    assertEquals(5, best.getDamage());
   }
 }
