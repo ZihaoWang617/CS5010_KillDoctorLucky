@@ -1,0 +1,371 @@
+============================================================
+Kill Doctor Lucky - Interactive Game
+============================================================
+
+Loading world from file: res/demo-world.txt
+✓ World loaded successfully!
+✓ Total rooms: 5
+✓ Maximum turns: 20
+✓ Pet: Shadow the Cat
+
+========================================
+Welcome to Kill Doctor Lucky!
+========================================
+Type 'help' for available commands.
+
+> add-human Alice Start Room
+Added human player: Alice starting in Start Room.
+> add-human Bob Middle Room
+Added human player: Bob starting in Middle Room.
+> add-human Charlie End Room
+Added human player: Charlie starting in End Room.
+> start
+Game started with 3 players.
+Maximum turns: 20
+
+========================================
+Turn 1 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> status
+Game Status: IN_PROGRESS
+Turn: 1 / 20
+Current Player: Alice
+Doctor Lucky health: 15/15
+
+========================================
+Turn 1 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> look
+You are in: Start Room
+Adjacent rooms (2): Middle Room, Far Room 1
+Items here (1): Mega Gun (15 dmg)
+Visible players (2): Bob, Doctor Lucky
+The pet Shadow the Cat is here with you.
+
+
+========================================
+Turn 2 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 3 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> status
+Game Status: IN_PROGRESS
+Turn: 3 / 20
+Current Player: Charlie
+Doctor Lucky health: 15/15
+
+========================================
+Turn 3 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 4 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 5 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 6 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 7 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 8 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 9 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 10 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 11 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 12 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 13 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 14 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 15 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 16 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 17 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 18 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 19 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> endturn
+Skipping turn...
+
+========================================
+Turn 20 of 20
+========================================
+Current player: Bob
+You are in: Middle Room
+Adjacent rooms: Start Room, End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> endturn
+Skipping turn...
+
+========================================
+Maximum number of turns reached: 20
+Doctor Lucky has escaped!
+Game Over - No winner!
+========================================

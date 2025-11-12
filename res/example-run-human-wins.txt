@@ -1,0 +1,306 @@
+============================================================
+Kill Doctor Lucky - Interactive Game
+============================================================
+
+Loading world from file: res/demo-world.txt
+✓ World loaded successfully!
+✓ Total rooms: 5
+✓ Maximum turns: 20
+✓ Pet: Shadow the Cat
+
+========================================
+Welcome to Kill Doctor Lucky!
+========================================
+Type 'help' for available commands.
+
+> add-human Alice Start Room
+Added human player: Alice starting in Start Room.
+> add-human Bob Far Room 1
+Added human player: Bob starting in Far Room 1.
+> add-human Charlie Far Room 2
+Added human player: Charlie starting in Far Room 2.
+> start
+Game started with 3 players.
+Maximum turns: 20
+
+========================================
+Turn 1 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> pickup Mega Gun
+Alice picked up Mega Gun.
+
+========================================
+Turn 2 of 20
+========================================
+Current player: Bob
+You are in: Far Room 1
+Adjacent rooms: Start Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> pickup Sharp Knife
+Pick up failed: item not present or capacity full.
+
+========================================
+Turn 3 of 20
+========================================
+Current player: Charlie
+You are in: Far Room 2
+Adjacent rooms: End Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> pickup Rock
+Charlie picked up Rock.
+
+========================================
+Turn 4 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: Mega Gun (15 dmg) [1/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> look
+You are in: Start Room
+Adjacent rooms (2): Middle Room, Far Room 1
+Items here (0): 
+Visible players (2): Bob, Doctor Lucky
+
+
+========================================
+Turn 5 of 20
+========================================
+Current player: Bob
+You are in: Far Room 1
+Adjacent rooms: Start Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> look
+You are in: Far Room 1
+Adjacent rooms (1): Start Room
+Items here (1): Stick (15 dmg)
+Visible players (1): Alice
+The pet Shadow the Cat is here with you.
+
+
+========================================
+Turn 6 of 20
+========================================
+Current player: Charlie
+You are in: Far Room 2
+Adjacent rooms: End Room
+Your items: Rock (15 dmg) [1/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> move End Room
+Charlie moved to End Room.
+
+========================================
+Turn 7 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: Mega Gun (15 dmg) [1/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> movepet Start Room
+Moved the pet 'Shadow the Cat' to Start Room.
+
+========================================
+Turn 8 of 20
+========================================
+Current player: Bob
+You are in: Far Room 1
+Adjacent rooms: Start Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> look
+You are in: Far Room 1
+Adjacent rooms (1): Start Room
+Items here (1): Stick (15 dmg)
+Visible players (1): Alice
+
+
+========================================
+Turn 9 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: Rock (15 dmg) [1/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> look
+You are in: End Room
+Adjacent rooms (1): Middle Room
+Items here (1): Rope (15 dmg)
+Visible players (0): 
+
+
+========================================
+Turn 10 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: Mega Gun (15 dmg) [1/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> look
+You are in: Start Room
+Adjacent rooms (1): Middle Room
+Items here (0): 
+Visible players (1): Bob
+
+
+========================================
+Turn 11 of 20
+========================================
+Current player: Bob
+You are in: Far Room 1
+Adjacent rooms: Start Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> look
+You are in: Far Room 1
+Adjacent rooms (0): 
+Items here (1): Stick (15 dmg)
+Visible players (2): Alice, Doctor Lucky
+
+
+========================================
+Turn 12 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: Rock (15 dmg) [1/3]
+
+Doctor Lucky is in: Middle Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Middle Room
+
+> look
+You are in: End Room
+Adjacent rooms (1): Far Room 2
+Items here (1): Rope (15 dmg)
+Visible players (1): Doctor Lucky
+
+
+========================================
+Turn 13 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: Mega Gun (15 dmg) [1/3]
+
+Doctor Lucky is in: End Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: End Room
+
+> look
+You are in: Start Room
+Adjacent rooms (2): Middle Room, Far Room 1
+Items here (0): 
+Visible players (1): Bob
+
+
+========================================
+Turn 14 of 20
+========================================
+Current player: Bob
+You are in: Far Room 1
+Adjacent rooms: Start Room
+Your items: (none) [0/3]
+
+Doctor Lucky is in: Far Room 1
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 2
+
+> pickup Sharp Knife
+Pick up failed: item not present or capacity full.
+
+========================================
+Turn 15 of 20
+========================================
+Current player: Charlie
+You are in: End Room
+Adjacent rooms: Middle Room, Far Room 2
+Your items: Rock (15 dmg) [1/3]
+
+Doctor Lucky is in: Far Room 2
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Far Room 1
+
+> look
+You are in: End Room
+Adjacent rooms (2): Middle Room, Far Room 2
+Items here (1): Rope (15 dmg)
+Visible players (1): Doctor Lucky
+
+
+========================================
+Turn 16 of 20
+========================================
+Current player: Alice
+You are in: Start Room
+Adjacent rooms: Middle Room, Far Room 1
+Your items: Mega Gun (15 dmg) [1/3]
+
+Doctor Lucky is in: Start Room
+Doctor Lucky health: 15/15
+Pet 'Shadow the Cat' is in: Start Room
+
+> attack Mega Gun
+Alice attempts to murder Doctor Lucky with Mega Gun!
+
+========================================
+SUCCESS! Doctor Lucky has been killed!
+Alice wins the game!
+========================================

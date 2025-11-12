@@ -30,26 +30,68 @@ public class ComputerPlayer extends Player {
   }
 
   /**
-   * Simple AI: randomly choose one of {move, pickup, look}.
+   * AI behavior: Attempts murder if possible (alone with Doctor Lucky and no witnesses),
+   * otherwise randomly chooses one of {move, pickup, look}.
+   * When attempting murder, always uses the highest damage weapon available.
    *
    * @param game the current game instance controlling the world
    */
   public void takeTurn(Game game) {
     if (game == null) {
-      throw new IllegalArgumentException("Game cannot be null.");
+      throw new IllegalArgumentException("Game cannot be null");
     }
-    int choice = rng.nextInt(3); // 0=move, 1=pickup, 2=look
-    switch (choice) {
-      case 0:
-        moveRandomly(game);
-        break;
-      case 1:
-        pickUpRandomItem(game);
-        break;
-      default:
-        lookAround(game);
-        break;
+    
+    // Check if we can attempt murder
+    if (canAttemptMurder(game)) {
+      attemptMurder(game);
+    } else {
+      // Otherwise, randomly choose an action
+      int choice = rng.nextInt(3); // 0=move, 1=pickup, 2=look
+      switch (choice) {
+        case 0:
+          moveRandomly(game);
+          break;
+        case 1:
+          pickUpRandomItem(game);
+          break;
+        default:
+          lookAround(game);
+          break;
+      }
     }
+  }
+
+  /**
+   * Checks if the computer player can attempt murder.
+   * Can attempt if in same room as Doctor Lucky and not visible to other players.
+   *
+   * @param game the game instance
+   * @return true if can attempt murder
+   */
+  private boolean canAttemptMurder(Game game) {
+    // Must be in same room as Doctor Lucky
+    if (!getCurrentRoom().equals(game.getDoctorLucky().getCurrentRoom())) {
+      return false;
+    }
+    
+    // Must not be visible to other players
+    return !game.isPlayerVisible(this);
+  }
+
+  /**
+   * Attempts to murder Doctor Lucky using the best weapon available.
+   * If no weapons, uses poke in the eye.
+   *
+   * @param game the game instance
+   */
+  private void attemptMurder(Game game) {
+    // Find best weapon
+    Item bestWeapon = getBestWeaponItem();
+    
+    String weaponName = (bestWeapon != null) ? bestWeapon.getName() : null;
+    
+    // Attempt murder
+    game.attemptMurder(this, weaponName);
   }
 
   /** Randomly move to a neighboring room (if any). */

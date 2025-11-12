@@ -1,6 +1,7 @@
 package killdoctorlucky.controller;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import killdoctorlucky.controller.commands.AddComputerPlayerCommand;
@@ -15,6 +16,7 @@ import killdoctorlucky.controller.commands.MovePetCommand;
 import killdoctorlucky.controller.commands.PickUpItemCommand;
 import killdoctorlucky.model.Game;
 import killdoctorlucky.model.GameStatus;
+import killdoctorlucky.model.Item;
 import killdoctorlucky.model.Room;
 import killdoctorlucky.model.occupants.ComputerPlayer;
 import killdoctorlucky.model.occupants.Player;
@@ -70,9 +72,48 @@ public class TextController {
       // Display current game status
       if (gameStarted && game.getStatus() == GameStatus.IN_PROGRESS) {
         println("");
+        println("========================================");
         println("Turn " + (turns + 1) + " of " + maxTurns);
-        println("Current player: " + game.getCurrentPlayer().getName());
+        println("========================================");
+        
+        Player currentPlayer = game.getCurrentPlayer();
+        println("Current player: " + currentPlayer.getName());
+        
+        Room currentRoom = currentPlayer.getCurrentRoom();
+        println("You are in: " + currentRoom.getName());
+        
+        // Show adjacent rooms for navigation ONLY
+        List<Room> adjacentRooms = game.getBoard().getAdjacentRooms(currentRoom);
+        if (!adjacentRooms.isEmpty()) {
+          print("Adjacent rooms: ");
+          for (int i = 0; i < adjacentRooms.size(); i++) {
+            if (i > 0) {
+              print(", ");
+            }
+            print(adjacentRooms.get(i).getName());
+          }
+          println("");
+        }
+        
+        // Show player's inventory (so they know what weapons they have)
+        List<Item> inventory = currentPlayer.getInventory();
+        if (!inventory.isEmpty()) {
+          print("Your items: ");
+          for (int i = 0; i < inventory.size(); i++) {
+            if (i > 0) {
+              print(", ");
+            }
+            print(inventory.get(i).getName() + " (" + inventory.get(i).getDamage() + " dmg)");
+          }
+          println(" [" + inventory.size() + "/" + currentPlayer.getMaxCarry() + "]");
+        } else {
+          println("Your items: (none) [0/" + currentPlayer.getMaxCarry() + "]");
+        }
+        
+        println("");
         println("Doctor Lucky is in: " + game.getDoctorLucky().getCurrentRoom().getName());
+        println("Doctor Lucky health: " + game.getDoctorLucky().getHealth() 
+            + "/" + game.getDoctorLucky().getMaxHealth());
         
         // Show pet location if pet exists
         if (game.getPet() != null) {
@@ -80,22 +121,38 @@ public class TextController {
               + game.getPet().getCurrentRoom().getName());
         }
         
+        println("");
+        
         // If current player is computer, automatically execute its turn
-        Player currentPlayer = game.getCurrentPlayer();
         if (currentPlayer instanceof ComputerPlayer) {
           println("Computer player " + currentPlayer.getName() + " is taking their turn...");
           ((ComputerPlayer) currentPlayer).takeTurn(game);
           
+          // Check if game ended due to murder (before calling playTurn)
+          if (game.isGameOver()) {
+            // Game ended due to successful murder by computer player
+            Player winner = game.getWinner();
+            if (winner != null) {
+              println("");
+              println("========================================");
+              println("GAME OVER!");
+              println("Computer player " + winner.getName() + " has won the game!");
+              println("========================================");
+            }
+            running = false;
+            break;
+          }
+          
+          // Game continues - advance turn
           game.playTurn();
           turns++;
           
-          // Check if game ended
+          // Check if game ended due to max turns
           if (checkGameEnd(turns)) {
             running = false;
             break;
           }
           
-          // Continue to next iteration to show next player's turn
           continue;
         }
       }
@@ -345,7 +402,7 @@ public class TextController {
       println("========================================");
       println("Maximum number of turns reached: " + maxTurns);
       println("Doctor Lucky has escaped!");
-      println("Game Over!");
+      println("Game Over - No winner!");
       println("========================================");
       return true;
     } else if (game.isGameOver()) {
@@ -353,6 +410,7 @@ public class TextController {
       if (winner != null) {
         println("");
         println("========================================");
+        println("GAME OVER!");
         println("Congratulations! " + winner.getName() + " has won the game!");
         println("========================================");
       } else {
@@ -393,7 +451,7 @@ public class TextController {
     sb.append("  add-computer <name> <room>  - Add a computer player\n");
     sb.append("  start                       - Start the game\n");
     sb.append("\nMAIN ACTIONS (ends turn automatically):\n");
-    sb.append("  look                        - Look around current room\n");
+    sb.append("  look                        - Look around (see items, players, details)\n");
     sb.append("  move <roomName>             - Move to an adjacent room\n");
     sb.append("  pickup <itemName>           - Pick up an item from current room\n");
     sb.append("  movepet <roomName>          - Move the pet to a specified room\n");

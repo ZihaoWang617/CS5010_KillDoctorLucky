@@ -265,14 +265,16 @@ public class Game {
     }
     sb.append('\n');
 
-    // Items in current room
     List<Item> items = here.getItems();
     sb.append("Items here (").append(items.size()).append("): ");
     for (int i = 0; i < items.size(); i++) {
       if (i > 0) {
         sb.append(", ");
       }
-      sb.append(items.get(i).getName());
+      sb.append(items.get(i).getName())
+        .append(" (")
+        .append(items.get(i).getDamage())
+          .append(" dmg)"); 
     }
     sb.append('\n');
 

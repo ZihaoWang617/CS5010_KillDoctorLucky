@@ -1,0 +1,22 @@
+20 15 Demo Mansion
+15 Doctor Lucky
+Shadow the Cat
+5
+0 0 4 4 Start Room
+5 0 9 4 Middle Room
+10 0 14 4 End Room
+0 5 4 9 Far Room 1
+10 5 14 9 Far Room 2
+5
+0 15 Mega Gun
+1 15 Sharp Knife
+2 15 Rope
+3 15 Stick
+4 15 Rock
+SIGHT
+Start Room : Middle Room, Far Room 1
+Middle Room : Start Room, Far Room 1
+End Room : Far Room 2
+Far Room 1 : Far Room 2, Middle Room, Start Room
+Far Room 2 : End Room, Far Room 1
+END
