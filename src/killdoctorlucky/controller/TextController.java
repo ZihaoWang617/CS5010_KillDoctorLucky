@@ -95,7 +95,7 @@ public class TextController {
           println("");
         }
         
-        // Show player's inventory (so they know what weapons they have)
+        // Show player's inventory
         List<Item> inventory = currentPlayer.getInventory();
         if (!inventory.isEmpty()) {
           print("Your items: ");
@@ -207,14 +207,13 @@ public class TextController {
           println("Game started with " + game.getPlayers().size() + " players.");
           println("Maximum turns: " + maxTurns);
           
-        // Play commands - MAIN ACTIONS (auto end turn)
+        // Play commands
         } else if ("look".equals(token)) {
           if (!ensureGameInProgress()) {
             continue;
           }
           new LookAroundCommand().execute(game, output);
-          
-          // Auto end turn after action
+
           game.playTurn();
           turns++;
           
@@ -234,7 +233,6 @@ public class TextController {
           }
           new MoveCommand(room).execute(game, output);
           
-          // Auto end turn after action
           game.playTurn();
           turns++;
           
@@ -258,7 +256,7 @@ public class TextController {
           }
           new PickUpItemCommand(itemName).execute(game, output);
           
-          // Auto end turn after action
+
           game.playTurn();
           turns++;
           
@@ -278,7 +276,7 @@ public class TextController {
           }
           new MovePetCommand(roomName).execute(game, output);
           
-          // Auto end turn after action
+
           game.playTurn();
           turns++;
           
@@ -291,7 +289,7 @@ public class TextController {
           if (!ensureGameInProgress()) {
             continue;
           }
-          // Read the rest of the line as the item name (may be empty for poke)
+          // Read the rest of the line as the item name
           String weaponName = sc.hasNextLine() ? sc.nextLine().trim() : "";
           new AttemptMurderCommand(weaponName.isEmpty() ? null : weaponName).execute(game, output);
           
@@ -312,7 +310,6 @@ public class TextController {
           }
           
         } else if ("endturn".equals(token)) {
-          // Keep this as a "skip turn" option for human players
           if (!ensureGameInProgress()) {
             continue;
           }
@@ -464,7 +461,7 @@ public class TextController {
     sb.append("  map <filename>              - Generate world map as PNG\n");
     sb.append("  spaces                      - List all spaces in the world\n");
     sb.append("  players                     - List all players in the game\n");
-    sb.append("  status                      - Show current game status\n");
+    sb.append("  status                      - Show current game status\n");  
     sb.append("\nGENERAL:\n");
     sb.append("  help                        - Show this help message\n");
     sb.append("  quit                        - Exit the game\n");

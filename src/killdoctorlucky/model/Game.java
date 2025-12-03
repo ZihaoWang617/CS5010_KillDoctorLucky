@@ -1,6 +1,7 @@
 package killdoctorlucky.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import killdoctorlucky.model.cards.Playable;
 import killdoctorlucky.model.occupants.ComputerPlayer;
@@ -13,8 +14,11 @@ import killdoctorlucky.util.RandomGenerator;
  * Represents the main game logic and state management for Kill Doctor Lucky.
  * The Game class coordinates all game components including players, the board,
  * Doctor Lucky, the pet, and the card deck to provide complete gameplay functionality.
+ * 
+ * <p>Implements ReadOnlyGameModel to provide controlled read access for the View layer
+ * in Milestone 4's MVC architecture.</p>
  */
-public class Game {
+public class Game implements ReadOnlyGameModel {
 
   /** Minimum and maximum number of players. */
   public static final int MIN_PLAYERS = 3;
@@ -34,6 +38,9 @@ public class Game {
   private int maxTurns = 0;
   private GameStatus status = GameStatus.SETUP;
   private Player winner = null;
+  
+  // Milestone 4: Track last action result for View display
+  private String lastActionResult = "";
 
   /**
    * Creates a game from the given components.
@@ -52,7 +59,86 @@ public class Game {
     this.doctorLucky = doctorLuckyParam;
   }
 
-  /* ==== Setup & lifecycle ==== */
+  /**
+   * Sets the pet for this game.
+   *
+   * @param petParam the pet to set
+   * @throws IllegalArgumentException if pet is null
+   */
+  public void setPet(Pet petParam) {
+    if (petParam == null) {
+      throw new IllegalArgumentException("Pet cannot be null");
+    }
+    this.pet = petParam;
+    this.pet.initializeDfsPath(board);
+  }
+
+  /**
+   * Sets the maximum number of turns for the game.
+   *
+   * @param maxTurnsParam the maximum turns
+   * @throws IllegalArgumentException if maxTurns is not positive
+   */
+  public void setMaxTurns(int maxTurnsParam) {
+    if (maxTurnsParam <= 0) {
+      throw new IllegalArgumentException("Max turns must be positive");
+    }
+    this.maxTurns = maxTurnsParam;
+  }
+
+  // ========== Player Management ==========
+
+  /**
+   * Adds a human player to the game.
+   * Can only be called during SETUP phase.
+   *
+   * @param name the player's name (non-null, non-empty)
+   * @param startingRoom the room where the player begins
+   * @throws IllegalArgumentException if name or startingRoom is invalid
+   * @throws IllegalStateException if game has already started
+   */
+  public void addHumanPlayer(String name, Room startingRoom) {
+    ensureSetupPhase();
+    if (name == null || name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Player name cannot be null or empty");
+    }
+    if (startingRoom == null) {
+      throw new IllegalArgumentException("Starting room cannot be null");
+    }
+    
+    Player player = new Player(name, startingRoom);
+    players.add(player);
+    lastActionResult = "Added human player: " + name;
+  }
+
+  /**
+   * Adds a computer player to the game.
+   * Can only be called during SETUP phase.
+   *
+   * @param name the player's name (non-null, non-empty)
+   * @param startingRoom the room where the player begins
+   * @param rng the random number generator for AI decisions
+   * @throws IllegalArgumentException if any argument is invalid
+   * @throws IllegalStateException if game has already started
+   */
+  public void addComputerPlayer(String name, Room startingRoom, RandomGenerator rng) {
+    ensureSetupPhase();
+    if (name == null || name.trim().isEmpty()) {
+      throw new IllegalArgumentException("Player name cannot be null or empty");
+    }
+    if (startingRoom == null) {
+      throw new IllegalArgumentException("Starting room cannot be null");
+    }
+    if (rng == null) {
+      throw new IllegalArgumentException("RandomGenerator cannot be null");
+    }
+    
+    ComputerPlayer computerPlayer = new ComputerPlayer(name, startingRoom, rng);
+    players.add(computerPlayer);
+    lastActionResult = "Added computer player: " + name;
+  }
+
+  // ========== Game Flow ==========
 
   /**
    * Starts the game: validates player count, deals opening hands, and switches to IN_PROGRESS.
@@ -68,6 +154,7 @@ public class Game {
     }
     dealInitialCards();
     status = GameStatus.IN_PROGRESS;
+    lastActionResult = "Game started with " + players.size() + " players";
   }
 
   /**
@@ -78,281 +165,147 @@ public class Game {
     if (status != GameStatus.IN_PROGRESS) {
       throw new IllegalStateException("Game has not started");
     }
-    // Controller is expected to have executed the chosen Command(s) for the current player.
-
-    // Doctor Lucky moves after each player's turn per M2 requirement.
+    
+    // Doctor Lucky moves after each player's turn
     doctorLucky.moveNext();
     
-    // Pet wanders to next location (Milestone 3)
+    // Pet wanders in DFS pattern (no parameters needed - uses initialized path)
     if (pet != null) {
       pet.wanderNext();
+      lastActionResult += "\nPet moved to: " + pet.getCurrentRoom().getName();
     }
-
-    // Advance to next player / turn.
+    
+    // Move to next player
     currentPlayerIndex = (currentPlayerIndex + 1) % players.size();
     turnCount++;
     
     // Check if max turns reached
-    if (maxTurns > 0 && turnCount >= maxTurns) {
+    if (turnCount >= maxTurns) {
       status = GameStatus.FINISHED;
+      lastActionResult = "Maximum turns reached. Doctor Lucky escapes!";
     }
   }
 
-  /** 
-   * Gets the current player.
-   * @return the current player (whose turn it is). 
+  /**
+   * Ends the game by setting status to FINISHED.
    */
-  public Player getCurrentPlayer() {
-    if (players.isEmpty()) {
-      throw new IllegalStateException("No players have been added");
+  public void endGame() {
+    status = GameStatus.FINISHED;
+    if (lastActionResult.isEmpty()) {
+      lastActionResult = "Game ended";
     }
-    return players.get(currentPlayerIndex);
   }
 
-  /** 
-   * Gets game status.
-   * @return current game status. 
-   */
-  public GameStatus getStatus() {
-    return status;
-  }
-
-  /** 
-   * Gets number of turns elapsed.
-   * @return number of turns elapsed. 
-   */
-  public int getTurnCount() {
-    return turnCount;
-  }
-
-  /** 
-   * Gets all the players in the join order.
-   * @return all players in join order.
-   */
-  public List<Player> getPlayers() {
-    return new ArrayList<>(players);
-  }
+  // ========== Game Actions ==========
 
   /**
-   * Gets the game board.
-   * @return the board
-   */
-  public Board getBoard() {
-    return board;
-  }
-
-  /**
-   * Gets Doctor Lucky.
-   * @return Doctor Lucky
-   */
-  public DoctorLucky getDoctorLucky() {
-    return doctorLucky;
-  }
-
-  /* ==== Milestone 2: Adding players during setup ==== */
-
-  /**
-   * Adds a human-controlled player to the game (turn order = join order).
+   * Attempts to murder Doctor Lucky with the specified item.
    *
-   * @param name  player name (non-null/non-blank)
-   * @param start starting room (non-null)
+   * @param player the player attempting the murder
+   * @param itemName the name of the item to use (null for "poke in eye")
+   * @return the result of the murder attempt
+   * @throws IllegalArgumentException if player is null
    */
-  public void addHumanPlayer(String name, Room start) {
-    ensureSetupPhase();
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("Player name cannot be null/blank");
+  public MurderResult attemptMurder(Player player, String itemName) {
+    if (player == null) {
+      throw new IllegalArgumentException("Player cannot be null");
     }
-    if (start == null) {
-      throw new IllegalArgumentException("Starting room cannot be null");
+    
+    // Check if player is in same room as Doctor Lucky
+    if (!player.getCurrentRoom().equals(doctorLucky.getCurrentRoom())) {
+      lastActionResult = "Doctor Lucky is not in your room!";
+      return MurderResult.FAILED_INSUFFICIENT_WEAPON;
     }
-    if (players.size() >= MAX_PLAYERS) {
-      throw new IllegalStateException("Cannot exceed max players: " + MAX_PLAYERS);
+    
+    // Check for witnesses
+    if (isPlayerVisible(player)) {
+      lastActionResult = "Murder attempt failed - witnesses present!";
+      return MurderResult.FAILED_WITNESS_PRESENT;  // 注意:不是复数
     }
-    players.add(new Player(name.trim(), start));
+    
+    // Calculate damage
+    int damage = 1; // Default "poke in eye"
+    Item weaponUsed = null;
+    
+    if (itemName != null && !itemName.trim().isEmpty()) {
+      // Find the item in player's inventory
+      for (Item item : player.getInventory()) {
+        if (item.getName().equalsIgnoreCase(itemName.trim())) {
+          damage = item.getDamage();
+          weaponUsed = item;
+          break;
+        }
+      }
+      
+      if (weaponUsed == null) {
+        lastActionResult = "You don't have that item!";
+        return MurderResult.FAILED_INSUFFICIENT_WEAPON;
+      }
+    }
+    
+    // Apply damage
+    doctorLucky.takeDamage(damage);
+    
+    // Remove item from game if used
+    if (weaponUsed != null) {
+      player.dropItem(weaponUsed.getName());
+    }
+    
+    // Check if Doctor Lucky is dead
+    if (!doctorLucky.isAlive()) {
+      winner = player;
+      status = GameStatus.FINISHED;
+      lastActionResult = player.getName() + " successfully killed Doctor Lucky!";
+      return MurderResult.SUCCESS;
+    }
+    
+    lastActionResult = "Attack dealt " + damage + " damage. Doctor Lucky has " 
+        + doctorLucky.getHealth() + " health remaining.";
+    return MurderResult.SUCCESS;
   }
 
   /**
-   * Adds a computer-controlled player to the game.
+   * Player picks up an item from their current room.
    *
-   * @param name  player name (non-null/non-blank)
-   * @param start starting room (non-null)
-   * @param rng   random generator used by the computer player (non-null)
-   */
-  public void addComputerPlayer(String name, Room start, RandomGenerator rng) {
-    ensureSetupPhase();
-    if (name == null || name.trim().isEmpty()) {
-      throw new IllegalArgumentException("Player name cannot be null/blank");
-    }
-    if (start == null || rng == null) {
-      throw new IllegalArgumentException("Start room and RNG must be non-null");
-    }
-    if (players.size() >= MAX_PLAYERS) {
-      throw new IllegalStateException("Cannot exceed max players: " + MAX_PLAYERS);
-    }
-    players.add(new ComputerPlayer(name.trim(), start, rng));
-  }
-
-  private void ensureSetupPhase() {
-    if (status != GameStatus.SETUP) {
-      throw new IllegalStateException("Players can only be added during SETUP");
-    }
-  }
-
-  /**
-   * Tries to move an item by name from the current room into the player's inventory.
-   * If the player lacks capacity, the item is restored to the room.
-   *
-   * @param player   the player attempting to pick up
-   * @param itemName the name of the item (case-sensitive)
-   * @return true if the item was picked up
+   * @param player the player picking up the item
+   * @param itemName the name of the item
+   * @return true if successful, false otherwise
    */
   public boolean pickupFromRoom(Player player, String itemName) {
-    if (player == null) {
-      throw new IllegalArgumentException("player cannot be null");
-    }
-    if (itemName == null || itemName.trim().isEmpty()) {
-      throw new IllegalArgumentException("itemName must not be null/blank");
-    }
-    Room here = player.getCurrentRoom();
-    Item taken = here.removeItem(itemName);
-    if (taken == null) {
-      return false; // not present
-    }
-    boolean added = player.pickUpItem(taken);
-    if (!added) {
-      // restore to room if capacity prevents pickup
-      here.addItem(taken);
+    if (player == null || itemName == null) {
       return false;
     }
-    return true;
+    
+    Room currentRoom = player.getCurrentRoom();
+    Item item = currentRoom.removeItem(itemName);
+    
+    if (item == null) {
+      lastActionResult = "Item '" + itemName + "' not found in this room";
+      return false;
+    }
+    
+    if (!player.canCarryMore()) {
+      currentRoom.addItem(item); // Put it back
+      lastActionResult = "Cannot carry more items (max " + player.getMaxCarry() + ")";
+      return false;
+    }
+    
+    boolean success = player.pickUpItem(item);
+    if (success) {
+      lastActionResult = player.getName() + " picked up " + itemName;
+    } else {
+      currentRoom.addItem(item); // Put it back
+      lastActionResult = "Failed to pick up " + itemName;
+    }
+    
+    return success;
   }
 
   /**
-   * Produces a textual description for what the given player can observe:
-   * current room, adjacent rooms, items, visible players, Doctor Lucky, and pet.
+   * Moves the pet to the specified room.
    *
-   * @param player the querying player
-   * @return multi-line string description
-   */
-  public String describeLookAround(Player player) {
-    if (player == null) {
-      throw new IllegalArgumentException("player cannot be null");
-    }
-    Room here = player.getCurrentRoom();
-    StringBuilder sb = new StringBuilder();
-
-    // Where am I?
-    sb.append("You are in: ").append(here.getName()).append('\n');
-
-    // Adjacent rooms (considering pet blocking)
-    List<Room> neighbors = board.getAdjacentRooms(here);
-    List<String> visibleNeighbors = new ArrayList<>();
-    for (Room neighbor : neighbors) {
-      // Check if pet blocks this room
-      if (pet != null && pet.getCurrentRoom().equals(neighbor)) {
-        // Pet makes this room invisible
-        continue;
-      }
-      visibleNeighbors.add(neighbor.getName());
-    }
-
-    sb.append("Adjacent rooms (").append(visibleNeighbors.size()).append("): ");
-    for (int i = 0; i < visibleNeighbors.size(); i++) {
-      if (i > 0) {
-        sb.append(", ");
-      }
-      sb.append(visibleNeighbors.get(i));
-    }
-    sb.append('\n');
-
-    List<Item> items = here.getItems();
-    sb.append("Items here (").append(items.size()).append("): ");
-    for (int i = 0; i < items.size(); i++) {
-      if (i > 0) {
-        sb.append(", ");
-      }
-      sb.append(items.get(i).getName())
-        .append(" (")
-        .append(items.get(i).getDamage())
-          .append(" dmg)"); 
-    }
-    sb.append('\n');
-
-    // Visible players (and Doctor Lucky)
-    List<String> visible = new ArrayList<>();
-    for (Player p : players) {
-      if (p == player) {
-        continue;
-      }
-      if (p.canBeSeenBy(player, board)) {
-        visible.add(p.getName());
-      }
-    }
-    if (doctorLucky != null && doctorLucky.canBeSeenBy(player, board)) {
-      visible.add("Doctor Lucky");
-    }
-
-    sb.append("Visible players (").append(visible.size()).append("): ");
-    for (int i = 0; i < visible.size(); i++) {
-      if (i > 0) {
-        sb.append(", ");
-      }
-      sb.append(visible.get(i));
-    }
-    sb.append('\n');
-
-    // Show pet location if visible
-    if (pet != null) {
-      if (pet.getCurrentRoom().equals(here)) {
-        sb.append("The pet ").append(pet.getName()).append(" is here with you.\n");
-      }
-    }
-
-    return sb.toString();
-  }
-
-  /**
-   * Checks if the game is over.
-   * @return true if the game is over. 
-   */
-  public boolean isGameOver() {
-    return status == GameStatus.FINISHED;
-  }
-
-  // ===== MILESTONE 3: PET MANAGEMENT =====
-
-  /**
-   * Sets the pet for this game and initializes its wandering path.
-   * This should be called during game setup after all rooms are loaded.
-   * 
-   * @param gamePet the pet to add to the game
-   * @throws IllegalArgumentException if pet is null
-   */
-  public void setPet(Pet gamePet) {
-    if (gamePet == null) {
-      throw new IllegalArgumentException("Pet cannot be null");
-    }
-    this.pet = gamePet;
-    // Initialize the pet's DFS wandering path
-    this.pet.initializeDfsPath(board);
-  }
-
-  /**
-   * Gets the pet in this game.
-   * 
-   * @return the pet, or null if no pet has been set
-   */
-  public Pet getPet() {
-    return pet;
-  }
-
-  /**
-   * Moves the pet to the specified target room.
-   * This represents a player's turn action.
-   * 
    * @param targetRoom the room to move the pet to
    * @throws IllegalArgumentException if targetRoom is null
-   * @throws IllegalStateException if no pet exists in the game
    */
   public void movePet(Room targetRoom) {
     if (targetRoom == null) {
@@ -361,188 +314,252 @@ public class Game {
     if (pet == null) {
       throw new IllegalStateException("No pet in the game");
     }
-
+    
     pet.moveToRoom(targetRoom);
+    lastActionResult = "Moved pet to " + targetRoom.getName();
   }
 
   /**
-   * Sets the maximum number of turns allowed in the game.
-   * 
-   * @param max the maximum turns (must be positive)
-   * @throws IllegalArgumentException if max <= 0
+   * Gets a description of what the player can see from their current room.
+   *
+   * @param player the player looking around
+   * @return a formatted string describing visible rooms, players, and items
    */
-  public void setMaxTurns(int max) {
-    if (max <= 0) {
-      throw new IllegalArgumentException("Max turns must be positive");
-    }
-    this.maxTurns = max;
-  }
-
-  /**
-   * Gets the maximum number of turns allowed.
-   * 
-   * @return the maximum turns
-   */
-  public int getMaxTurns() {
-    return maxTurns;
-  }
-
-  // ===== MILESTONE 3: MURDER ATTEMPT LOGIC =====
-
-  /**
-   * Attempts to murder Doctor Lucky using the specified item.
-   * The murder can succeed or fail based on witnesses and game rules.
-   * 
-   * @param player the player attempting the murder
-   * @param itemName the name of the item to use (can be empty for "poke in eye")
-   * @return the result of the murder attempt
-   * @throws IllegalArgumentException if player is null
-   * @throws IllegalStateException if game is not in progress
-   */
-  public MurderResult attemptMurder(Player player, String itemName) {
+  public String describeLookAround(Player player) {
     if (player == null) {
-      throw new IllegalArgumentException("Player cannot be null");
+      return "Invalid player";
     }
-    if (status != GameStatus.IN_PROGRESS) {
-      throw new IllegalStateException("Game is not in progress");
-    }
-
-    // Check if player is in same room as Doctor Lucky
-    if (!player.getCurrentRoom().equals(doctorLucky.getCurrentRoom())) {
-      throw new IllegalArgumentException("Player must be in same room as Doctor Lucky");
-    }
-
-    // Check if other players can see this attempt
-    if (isPlayerVisible(player)) {
-      // Witnessed by another player - attack fails automatically
-      return MurderResult.FAILED_WITNESS_PRESENT;
-    }
-
-    // Determine damage
-    int damage = 0;
-    Item weaponUsed = null;
-
-    if (itemName == null || itemName.trim().isEmpty()) {
-      // Poke in the eye
-      damage = player.getPokeInEyeDamage();
+    
+    Room currentRoom = player.getCurrentRoom();
+    StringBuilder description = new StringBuilder();
+    
+    description.append("You are in: ").append(currentRoom.getName()).append("\n\n");
+    
+    // Items in current room
+    description.append("Items here: ");
+    if (currentRoom.getItems().isEmpty()) {
+      description.append("None");
     } else {
-      // Try to find the item in player's inventory
-      weaponUsed = findItemInInventory(player, itemName.trim());
-      if (weaponUsed == null) {
-        throw new IllegalArgumentException("Player does not have item: " + itemName);
+      for (Item item : currentRoom.getItems()) {
+        description.append(item.getName()).append(" (").append(item.getDamage())
+            .append(" damage), ");
       }
-      damage = weaponUsed.getDamage();
+      description.setLength(description.length() - 2); // Remove last comma
     }
-
-    // Apply damage to Doctor Lucky
-    doctorLucky.takeDamage(damage);
-
-    // Remove the weapon from game (becomes evidence)
-    if (weaponUsed != null) {
-      player.dropItem(weaponUsed.getName());
-      // Item is removed from game (evidence)
+    description.append("\n\n");
+    
+    // Players in current room
+    description.append("Players here: ");
+    List<Player> playersInRoom = new ArrayList<>();
+    for (Player p : players) {
+      if (p.getCurrentRoom().equals(currentRoom) && !p.equals(player)) {
+        playersInRoom.add(p);
+      }
     }
-
-    // Check if Doctor Lucky is dead
-    if (!doctorLucky.isAlive()) {
-      status = GameStatus.FINISHED;
-      winner = player;
-      return MurderResult.SUCCESS;
+    if (playersInRoom.isEmpty()) {
+      description.append("None");
+    } else {
+      for (Player p : playersInRoom) {
+        description.append(p.getName()).append(", ");
+      }
+      description.setLength(description.length() - 2);
     }
-
-    // Doctor Lucky survived
-    return MurderResult.FAILED_INSUFFICIENT_WEAPON;
+    description.append("\n\n");
+    
+    // Doctor Lucky location
+    if (doctorLucky.getCurrentRoom().equals(currentRoom)) {
+      description.append("Doctor Lucky is HERE!\n");
+    } else {
+      description.append("Doctor Lucky is in: ")
+          .append(doctorLucky.getCurrentRoom().getName()).append("\n");
+    }
+    
+    // Pet location
+    if (pet != null) {
+      if (pet.getCurrentRoom().equals(currentRoom)) {
+        description.append("Pet is HERE!\n");
+      } else {
+        description.append("Pet is in: ").append(pet.getCurrentRoom().getName()).append("\n");
+      }
+    }
+    description.append("\n");
+    
+    // Adjacent rooms (considering pet blocking)
+    description.append("Adjacent rooms:\n");
+    List<Room> adjacentRooms = board.getAdjacentRooms(currentRoom);
+    if (adjacentRooms.isEmpty()) {
+      description.append("  None");
+    } else {
+      for (Room room : adjacentRooms) {
+        // Check if room is visible (not blocked by pet)
+        boolean blocked = (pet != null && pet.getCurrentRoom().equals(room));
+        if (blocked) {
+          description.append("  - ").append(room.getName())
+              .append(" (blocked by pet)\n");
+        } else {
+          description.append("  - ").append(room.getName()).append("\n");
+        }
+      }
+    }
+    
+    lastActionResult = "Looked around";
+    return description.toString();
   }
 
   /**
-   * Checks if a player can be seen by any other player during a murder attempt.
-   * Takes into account pet location blocking visibility.
-   * 
-   * @param player the player to check visibility for
-   * @return true if any other player can see this player
-   * @throws IllegalArgumentException if player is null
+   * Checks if a player can be seen by other players (for witness detection).
+   *
+   * @param player the player to check
+   * @return true if player can be seen by at least one other player
    */
   public boolean isPlayerVisible(Player player) {
     if (player == null) {
       throw new IllegalArgumentException("Player cannot be null");
     }
-
-    Room playerRoom = player.getCurrentRoom();
-
-    // Check if pet is in the same room (blocks visibility from neighbors)
-    boolean petInRoom = (pet != null && pet.getCurrentRoom().equals(playerRoom));
-
-    // Check each other player
-    for (Player otherPlayer : players) {
-      if (otherPlayer.equals(player)) {
-        continue; // Skip self
+    
+    for (Player other : players) {
+      if (other.equals(player)) {
+        continue;
       }
-
-      Room otherRoom = otherPlayer.getCurrentRoom();
-
-      // Same room - always visible
-      if (otherRoom.equals(playerRoom)) {
+      
+      // Check if other player can see this player
+      if (player.canSeeOtherPlayer(other, board)) {
         return true;
       }
-
-      // Different room - check if they're neighbors
-      if (board.getAdjacentRooms(otherRoom).contains(playerRoom)) {
-        // They're neighbors, but check if pet blocks the view
-        if (!petInRoom) {
-          // No pet blocking - other player can see
-          return true;
-        }
-      }
     }
-
-    // No one can see the player
+    
     return false;
   }
 
-  /**
-   * Gets the winner of the game if there is one.
-   * 
-   * @return the player who won, or null if no winner yet or game not finished
-   */
-  public Player getWinner() {
-    if (status != GameStatus.FINISHED) {
+  // ========== ReadOnlyGameModel Implementation ==========
+
+  @Override
+  public Player getCurrentPlayer() {
+    if (status != GameStatus.IN_PROGRESS || players.isEmpty()) {
       return null;
     }
+    return players.get(currentPlayerIndex);
+  }
+
+  @Override
+  public List<Player> getPlayers() {
+    return Collections.unmodifiableList(players);
+  }
+
+  @Override
+  public Board getBoard() {
+    return board;
+  }
+
+  @Override
+  public int getTurnCount() {
+    return turnCount;
+  }
+
+  @Override
+  public int getMaxTurns() {
+    return maxTurns;
+  }
+
+  @Override
+  public boolean isGameOver() {
+    return status == GameStatus.FINISHED;
+  }
+
+  @Override
+  public GameStatus getStatus() {
+    return status;
+  }
+
+  @Override
+  public DoctorLucky getDoctorLucky() {
+    return doctorLucky;
+  }
+
+  @Override
+  public Pet getPet() {
+    return pet;
+  }
+
+  @Override
+  public Player getWinner() {
     return winner;
   }
 
-  /**
-   * Ends the game, setting status to FINISHED.
-   */
-  public void endGame() {
-    this.status = GameStatus.FINISHED;
-  }
-
-  /**
-   * Helper method to find an item in player's inventory by name.
-   * 
-   * @param player the player
-   * @param itemName the item name to find
-   * @return the item, or null if not found
-   */
-  private Item findItemInInventory(Player player, String itemName) {
-    for (Item item : player.getInventory()) {
-      if (item.getName().equalsIgnoreCase(itemName)) {
-        return item;
-      }
+  @Override
+  public GameState getGameState() {
+    // Current player name
+    String currentPlayerName = "";
+    if (getCurrentPlayer() != null) {
+      currentPlayerName = getCurrentPlayer().getName();
     }
-    return null;
+    
+    // Doctor Lucky and Pet locations
+    String doctorLocation = doctorLucky.getCurrentRoom().getName();
+    String petLocation = pet != null ? pet.getCurrentRoom().getName() : "Unknown";
+    
+    // Winner name
+    String winnerName = null;
+    if (winner != null) {
+      winnerName = winner.getName();
+    }
+    
+    // Create immutable player information
+    List<GameState.PlayerInfo> playerInfos = new ArrayList<>();
+    for (Player player : players) {
+      List<String> itemNames = new ArrayList<>();
+      for (Item item : player.getInventory()) {
+        itemNames.add(item.getName());
+      }
+      
+      boolean isComputer = player instanceof ComputerPlayer;
+      GameState.PlayerInfo info = new GameState.PlayerInfo(
+          player.getName(),
+          player.getCurrentRoom().getName(),
+          itemNames,
+          isComputer
+      );
+      playerInfos.add(info);
+    }
+    
+    // Create and return GameState
+    return new GameState(
+        currentPlayerName,
+        turnCount,
+        maxTurns,
+        doctorLocation,
+        petLocation,
+        lastActionResult,
+        isGameOver(),
+        winnerName,
+        playerInfos,
+        doctorLucky.getHealth(),
+        doctorLucky.getMaxHealth()
+    );
   }
 
-  /** Deals the opening hand to each player. */
+  // ========== Helper Methods ==========
+
+  /**
+   * Ensures the game is in SETUP phase.
+   *
+   * @throws IllegalStateException if not in SETUP phase
+   */
+  private void ensureSetupPhase() {
+    if (status != GameStatus.SETUP) {
+      throw new IllegalStateException("Can only be called during setup phase");
+    }
+  }
+
+  /**
+   * Deals initial cards to all players.
+   */
   private void dealInitialCards() {
-    for (int i = 0; i < STARTING_HAND_SIZE; i++) {
-      for (Player p : players) {
-        if (!deck.isEmpty() && p.canDrawCard()) {
-          Playable c = deck.drawCard();
-          if (c != null) {
-            p.addCard(c);
-          }
+    for (Player player : players) {
+      for (int i = 0; i < STARTING_HAND_SIZE; i++) {
+        if (!deck.isEmpty()) {
+          Playable card = deck.drawCard();
+          player.addCard(card);
         }
       }
     }

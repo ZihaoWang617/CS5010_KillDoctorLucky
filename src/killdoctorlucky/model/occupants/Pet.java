@@ -41,7 +41,7 @@ public class Pet implements Occupant, Movable {
     this.dfsPath = new ArrayList<>();
     this.pathIndex = 0;
 
-    // Add pet to starting room
+
     startingRoom.addOccupant(this);
   }
 
@@ -111,7 +111,6 @@ public class Pet implements Occupant, Movable {
       return true;
     }
 
-    // Otherwise, use board's visibility calculation
     return board.calculateVisibility(other, this);
   }
 
@@ -126,7 +125,7 @@ public class Pet implements Occupant, Movable {
     if (board == null) {
       throw new IllegalArgumentException("Board cannot be null");
     }
-
+    
     this.dfsPath = calculateDfsPath(board, currentRoom);
     this.pathIndex = 0;
   }
@@ -137,15 +136,10 @@ public class Pet implements Occupant, Movable {
    * The pet cycles through the path continuously.
    */
   public void wanderNext() {
-    if (dfsPath == null || dfsPath.isEmpty()) {
-      return; // Path not initialized yet
-    }
-
-    // Move to next room in DFS path
+    
     pathIndex = (pathIndex + 1) % dfsPath.size();
     Room nextRoom = dfsPath.get(pathIndex);
-
-    // Update room occupancy
+    
     currentRoom.removeOccupant(this);
     nextRoom.addOccupant(this);
     this.currentRoom = nextRoom;
@@ -160,24 +154,25 @@ public class Pet implements Occupant, Movable {
    * @return a list of rooms in DFS order
    */
   private List<Room> calculateDfsPath(Board board, Room start) {
+    
     List<Room> path = new ArrayList<>();
     Set<Room> visited = new HashSet<>();
     Stack<Room> stack = new Stack<>();
-
+    
     stack.push(start);
-
+    
     while (!stack.isEmpty()) {
       Room current = stack.pop();
-
+        
       if (visited.contains(current)) {
         continue;
       }
-
+        
       visited.add(current);
       path.add(current);
-
-      // Add neighbors to stack (in reverse order to maintain consistent DFS)
+        
       List<Room> neighbors = board.getAdjacentRooms(current);
+        
       for (int i = neighbors.size() - 1; i >= 0; i--) {
         Room neighbor = neighbors.get(i);
         if (!visited.contains(neighbor)) {
@@ -185,7 +180,6 @@ public class Pet implements Occupant, Movable {
         }
       }
     }
-
     return path;
   }
 

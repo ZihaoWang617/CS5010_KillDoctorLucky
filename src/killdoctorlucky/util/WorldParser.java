@@ -67,7 +67,7 @@ public class WorldParser {
       }
       final int targetHealth = Integer.parseInt(targetParts[0]);
       
-      // Step 2.5: Parse pet (NEW for Milestone 3)
+      // Step 2.5: Parse pet
       String petLine = reader.readLine();
       String petName = null;
       if (petLine != null && !petLine.trim().isEmpty()) {

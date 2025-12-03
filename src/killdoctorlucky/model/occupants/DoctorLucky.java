@@ -73,17 +73,13 @@ public class DoctorLucky implements Movable, Occupant {
    */
   public void moveNext() {
     if (movementSequence == null || movementSequence.isEmpty()) {
-      return; // No movement sequence defined
+      return;
     }
-
-    // Move to next room in sequence
     sequenceIndex = (sequenceIndex + 1) % movementSequence.size();
     Room nextRoom = movementSequence.get(sequenceIndex);
-
-    // Update room occupancy
-    currentRoom.removeOccupant(this);
-    nextRoom.addOccupant(this);
-    currentRoom = nextRoom;
+    
+    moveToRoom(nextRoom);
+   
   }
 
   /**

@@ -85,16 +85,15 @@ public class ComputerPlayer extends Player {
    * @param game the game instance
    */
   private void attemptMurder(Game game) {
-    // Find best weapon
+
     Item bestWeapon = getBestWeaponItem();
     
     String weaponName = (bestWeapon != null) ? bestWeapon.getName() : null;
     
-    // Attempt murder
     game.attemptMurder(this, weaponName);
   }
 
-  /** Randomly move to a neighboring room (if any). */
+  /** Randomly move to a neighboring room. */
   private void moveRandomly(Game game) {
     Room current = getCurrentRoom();
     List<Room> neighbors = game.getBoard().getAdjacentRooms(current);
@@ -104,7 +103,7 @@ public class ComputerPlayer extends Player {
     }
   }
 
-  /** Try to pick up a random item from the current room (if capacity allows). */
+  /** Try to pick up a random item from the current room. */
   private void pickUpRandomItem(Game game) {
     List<Item> items = getCurrentRoom().getItems();
     if (!items.isEmpty()) {
@@ -113,7 +112,7 @@ public class ComputerPlayer extends Player {
     }
   }
 
-  /** Just trigger the model's look-around text (controller会决定如何展示). */
+  /** Just trigger the model's look-around text. */
   private void lookAround(Game game) {
     game.describeLookAround(this);
   }
