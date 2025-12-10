@@ -220,7 +220,7 @@ public class Game implements ReadOnlyGameModel {
     // Check for witnesses
     if (isPlayerVisible(player)) {
       lastActionResult = "Murder attempt failed - witnesses present!";
-      return MurderResult.FAILED_WITNESS_PRESENT;  // 注意:不是复数
+      return MurderResult.FAILED_WITNESS_PRESENT;
     }
     
     // Calculate damage
