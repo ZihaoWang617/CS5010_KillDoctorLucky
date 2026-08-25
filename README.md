@@ -518,7 +518,7 @@ All example runs are located in the `res/` directory and demonstrate Milestone 3
 - **Author**: Zihao Wang
 - **Course**: CS5010 Programming Design Paradigms
 - **Institution**: Northeastern University Vancouver
-- **Semester**: Fall 2024
+- **Semester**: Fall 2025
 
 ---
 
